@@ -604,11 +604,11 @@ static int apply_collection(uint8_t *buffer, FILE *f, const struct binary *binar
 static const char optionhelp[] =
   "Options:\n"
   "  -l             : List available patches\n"
-  "  -c             : List available patch collections\n"
-  "  -c <n>         : Apply patch collection <n>\n"
+  "  -c             : List available patch collections (XWA only)\n"
+  "  -c <n>         : Apply patch collection <n> (XWA only)\n"
   "  -p <n>         : Apply patch number <n>\n"
-  "  -r             : List resolution settings\n"
-  "  -r <n> <w> <h> : Redirect resolution <n> to <w>x<h>\n"
+  "  -r             : List resolution settings (XWA only)\n"
+  "  -r <n> <w> <h> : Redirect resolution <n> to <w>x<h> (XWA only)\n"
 ;
 
 static void print_help(const char *prog) {
@@ -631,6 +631,7 @@ int main(int argc, char *argv[]) {
   int detected_patches[NUM_PATCHES];
   uint8_t *buffer = NULL;
   FILE *xwa = 0;
+  int is_xwa;
   int i;
   int res = 1;
   enum PATCHES p;
@@ -661,6 +662,7 @@ int main(int argc, char *argv[]) {
   else
     printf("Could not detect file, assuming it is %s\n", binary->name);
   rewind(xwa);
+  is_xwa = binary_best_pos == 0;
 
   for (i = 0; i < NUM_RES; i++) {
     read_buffer(buffer, xwa, resdes[i].offset, 10);
@@ -674,17 +676,17 @@ int main(int argc, char *argv[]) {
       list_patches(binary->patchgroups);
       res = 0;
       goto cleanup;
-    } else if (argc == 3 && strcmp(opt, "-c") == 0) {
+    } else if (argc == 3 && strcmp(opt, "-c") == 0 && binary->collections) {
       list_collections(binary->collections);
       res = 0;
       goto cleanup;
-    } else if (argc == 3 && strcmp(opt, "-r") == 0) {
+    } else if (argc == 3 && strcmp(opt, "-r") == 0 && is_xwa) {
       printf("Resolutions:\n");
       for (i = 0; i < NUM_RES; i++)
         printf("%i: %5i x %5i mapped to %5i x %5i\n", i, resdes[i].width, resdes[i].height, resolutions[i][0], resolutions[i][1]);
       res = 0;
       goto cleanup;
-    } else if (argc == 6 && strcmp(opt, "-r") == 0) {
+    } else if (argc == 6 && strcmp(opt, "-r") == 0 && is_xwa) {
       int num = parse_num(argv[3], NUM_RES);
       int w = parse_num(argv[4], 10000);
       int h = parse_num(argv[5], 10000);
@@ -716,7 +718,7 @@ int main(int argc, char *argv[]) {
       else
         res = 0;
       goto cleanup;
-    } else if (argc == 4 && strcmp(opt, "-c") == 0) {
+    } else if (argc == 4 && strcmp(opt, "-c") == 0 && binary->collections) {
       int num = parse_num(argv[3], num_collections(binary->collections));
       if (num < 0) {
         printf("Incorrect collection number\n");
