@@ -437,6 +437,18 @@ static int check_patch(uint8_t *buffer, FILE *f, enum PATCHES patch) {
   return match;
 }
 
+static int count_patches(uint8_t *buffer, FILE *f, const enum PATCHES *patchgroups) {
+  int i = 0;
+  int count = 0;
+  while (patchgroups[i] != NO_PATCH) {
+    for (; patchgroups[i] != NO_PATCH; i++)
+      if (check_patch(buffer, f, patchgroups[i]))
+        count++;
+    i++;
+  }
+  return count;
+}
+
 static void list_patches(const enum PATCHES *patchgroups) {
   int i = 0;
   int group = 1;
@@ -543,6 +555,8 @@ static int parse_num(const char *s, int limit) {
 }
 
 int main(int argc, char *argv[]) {
+  int binary_best_pos = 0;
+  int binary_best_count = 0;
   int resolutions[NUM_RES][2];
   int detected_patches[NUM_PATCHES];
   uint8_t *buffer = NULL;
@@ -556,23 +570,28 @@ int main(int argc, char *argv[]) {
     print_help(prog);
     return 1;
   }
-  for (i = 0; binaries[i].name; i++) {
-    if (!strcasecmp(binaries[i].filename, argv[1]))
-      break;
-  }
-  if (binaries[i].name) {
-    binary = &binaries[i];
-    printf("Detected file as %s\n", binary->name);
-  } else {
-    binary = binaries;
-    printf("Could not detect file, assuming it is %s\n", binary->name);
-  }
   xwa = fopen(argv[1], "r+b");
   if (!xwa) {
     printf("Could not open file %s: %s\n", argv[1], strerror(errno));
     return 1;
   }
   buffer = malloc(BUFFER_SZ);
+
+  // check with which binary description we get the most patch matches
+  for (i = 0; binaries[i].name; i++) {
+    int count = count_patches(buffer, xwa, binaries[i].patchgroups);
+    if (count > binary_best_count) {
+      binary_best_count = count;
+      binary_best_pos   = i;
+    }
+  }
+  binary = &binaries[binary_best_pos];
+  if (binary_best_count > 0)
+    printf("Detected file as %s with %i matches\n", binary->name, binary_best_count);
+  else
+    printf("Could not detect file, assuming it is %s\n", binary->name);
+  rewind(xwa);
+
   for (i = 0; i < NUM_RES; i++) {
     read_buffer(buffer, xwa, resdes[i].offset, 10);
     resolutions[i][0] = resolutions[i][1] = -1;
