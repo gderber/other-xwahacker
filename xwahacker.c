@@ -110,6 +110,15 @@ enum PATCHES {
   PATCH_PRTSCR_32_1,
   PATCH_PRTSCR_8_2,
   PATCH_PRTSCR_32_2,
+
+  PATCH_TIE95_BLT_CLEAR,
+  PATCH_TIE95_CLEAR2,
+
+  PATCH_XWING95_BLT_CLEAR,
+  PATCH_XWING95_CLEAR2,
+
+  PATCH_XVTBOP_BLT_CLEAR,
+  PATCH_XVTBOP_CLEAR2,
   NUM_PATCHES
 };
 
@@ -138,6 +147,21 @@ static const enum PATCHES xwa_patchgroups[] = {
   PATCH_SELECT_RES, PATCH_FORCE_RES, NO_PATCH,
   PATCH_PRTSCR_8_1, PATCH_PRTSCR_32_1, NO_PATCH,
   PATCH_PRTSCR_8_2, PATCH_PRTSCR_32_2, NO_PATCH,
+  NO_PATCH
+};
+
+static const enum PATCHES tie95_patchgroups[] = {
+  PATCH_TIE95_BLT_CLEAR, PATCH_TIE95_CLEAR2, NO_PATCH,
+  NO_PATCH
+};
+
+static const enum PATCHES xwing95_patchgroups[] = {
+  PATCH_XWING95_BLT_CLEAR, PATCH_XWING95_CLEAR2, NO_PATCH,
+  NO_PATCH
+};
+
+static const enum PATCHES xvtbop_patchgroups[] = {
+  PATCH_XVTBOP_BLT_CLEAR, PATCH_XVTBOP_CLEAR2, NO_PATCH,
   NO_PATCH
 };
 
@@ -193,6 +217,15 @@ static const char * const patchnames[NUM_PATCHES] = {
   [PATCH_PRTSCR_32_1] = "support 32 bit screenshots part 1",
   [PATCH_PRTSCR_8_2]  = "support 8 bit screenshots part 2",
   [PATCH_PRTSCR_32_2] = "support 32 bit screenshots part 2",
+
+  [PATCH_TIE95_BLT_CLEAR]   = "Z-buffer clear via Surface::Blt",
+  [PATCH_TIE95_CLEAR2]      = "Z-buffer clear via Viewport::Clear2",
+
+  [PATCH_XWING95_BLT_CLEAR]   = "Z-buffer clear via Surface::Blt",
+  [PATCH_XWING95_CLEAR2]      = "Z-buffer clear via Viewport::Clear2",
+
+  [PATCH_XVTBOP_BLT_CLEAR]   = "Z-buffer clear via Surface::Blt",
+  [PATCH_XVTBOP_CLEAR2]      = "Z-buffer clear via Viewport::Clear2",
 };
 
 static const struct patchdesc {
@@ -385,6 +418,39 @@ static const struct patchdesc {
                            0x6a, 0x03, 0x50, 0xe8, 0x7d, 0x44, 0x06, 0x00,
                            0x0f, 0xbf, 0xc0, 0x83, 0xc4, 0x10, 0x85, 0xc0,
                            0x0f, 0x84, 0x38, 0x01, 0x00, 0x00, 0xeb, 0x3e}},
+
+  [PATCH_TIE95_BLT_CLEAR]   = {0x0c76b8, 30, 1,
+      (const uint8_t [30]){0xa1, 0x04, 0x1e, 0x6b, 0x00, 0x8d, 0x54, 0x24,
+                           0x14, 0x52, 0x68, 0x00, 0x00, 0x00, 0x03, 0x8b,
+                           0x08, 0x6a, 0x00, 0x8d, 0x54, 0x24, 0x10, 0x6a,
+                           0x00, 0x52, 0x50, 0xff, 0x51, 0x14}},
+  [PATCH_TIE95_CLEAR2]      = {0x0c76b8, 30, 0,
+      (const uint8_t [30]){0xa1, 0x1c, 0xc1, 0x58, 0x00, 0x8d, 0x54, 0x24,
+                           0x14, 0x6a, 0x00, 0x6a, 0x00, 0x6a, 0x00, 0x8b,
+                           0x08, 0x6a, 0x02, 0x8d, 0x54, 0x24, 0x14, 0x52,
+                           0x6a, 0x01, 0x50, 0xff, 0x51, 0x50}},
+
+  [PATCH_XWING95_BLT_CLEAR]   = {0x0b318b, 31, 1,
+      (const uint8_t [31]){0x8d, 0x44, 0x24, 0x14, 0x8d, 0x4c, 0x24, 0x04,
+                           0x50, 0x8b, 0x15, 0xa4, 0xce, 0x63, 0x00, 0x68,
+                           0x00, 0x00, 0x00, 0x03, 0x6a, 0x00, 0x6a, 0x00,
+                           0x8b, 0x02, 0x51, 0x52, 0xff, 0x50, 0x14}},
+  [PATCH_XWING95_CLEAR2]      = {0x0b318b, 31, 0,
+      (const uint8_t [31]){0x31, 0xc0, 0x90, 0x90, 0x8d, 0x4c, 0x24, 0x04,
+                           0x50, 0x8b, 0x15, 0x24, 0x70, 0x56, 0x00, 0x90,
+                           0x6a, 0x00, 0x6a, 0x00, 0x6a, 0x02, 0x51, 0x6a,
+                           0x01, 0x8b, 0x02, 0x52, 0xff, 0x50, 0x50}},
+
+  [PATCH_XVTBOP_BLT_CLEAR]   = {0x0b5e2b, 28, 1,
+      (const uint8_t [28]){0x50, 0x68, 0x00, 0x00, 0x00, 0x03, 0x6a, 0x00,
+                           0x6a, 0x00, 0x6a, 0x00, 0xa1, 0xcc, 0xee, 0x64,
+                           0x00, 0x50, 0xa1, 0xcc, 0xee, 0x64, 0x00, 0x8b,
+                           0x00, 0xff, 0x50, 0x14}},
+  [PATCH_XVTBOP_CLEAR2]      = {0x0b5e2b, 28, 0,
+      (const uint8_t [28]){0x6a, 0x00, 0x6a, 0x00, 0x6a, 0x00, 0x6a, 0x02,
+                           0x6a, 0x00, 0x6a, 0x00, 0xa1, 0x44, 0xee, 0x64,
+                           0x00, 0x50, 0xa1, 0x44, 0xee, 0x64, 0x00, 0x8b,
+                           0x00, 0xff, 0x50, 0x50}},
 };
 
 struct collection {
@@ -417,6 +483,9 @@ static const struct binary {
   const struct collection *collections;
 } binaries[] = {
   {"X-Wing Alliance 2.02", "xwingalliance.exe", xwa_patchgroups, xwa_collections},
+  {"TIE Fighter 95", "TIE95.EXE", tie95_patchgroups, NULL},
+  {"X-Wing 95", "XWING95.EXE", xwing95_patchgroups, NULL},
+  {"X-Wing vs. TIE Fighter Balance of Power", "Z_XVT__.EXE", xvtbop_patchgroups, NULL},
   {NULL}
 };
 
