@@ -489,12 +489,13 @@ static const struct binary {
   {NULL}
 };
 
-static int check_patch(uint8_t *buffer, FILE *f, enum PATCHES patch) {
+static int check_patch(uint8_t *buffer, FILE *f, enum PATCHES patch, int silent) {
   const struct patchdesc *p = &patchdescs[patch];
   int match;
   if (DEBUG) printf("Checking for patch %i\n", patch);
   if (!read_buffer(buffer, f, p->offset, p->len)) {
-    printf("Read error while checking for patch %i\n", patch);
+    if (!silent)
+      printf("Read error while checking for patch %i\n", patch);
     return 0;
   }
   match = memcmp(buffer, p->value, p->len) == 0;
@@ -511,7 +512,7 @@ static int count_patches(uint8_t *buffer, FILE *f, const enum PATCHES *patchgrou
   int count = 0;
   while (patchgroups[i] != NO_PATCH) {
     for (; patchgroups[i] != NO_PATCH; i++)
-      if (check_patch(buffer, f, patchgroups[i]))
+      if (check_patch(buffer, f, patchgroups[i], 1))
         count++;
     i++;
   }
@@ -569,7 +570,7 @@ static int apply_patch(uint8_t *buffer, FILE *f, const enum PATCHES *patchgroups
   const enum PATCHES *group = find_patchgroup(patchgroups, patch);
   assert(group);
   for (i = 0; group[i] != NO_PATCH; i++) {
-    if (check_patch(buffer, f, group[i])) {
+    if (check_patch(buffer, f, group[i], 0)) {
       previous = group[i];
       break;
     }
@@ -733,7 +734,7 @@ int main(int argc, char *argv[]) {
     }
   }
   for (p = FIRST_PATCH; p < NUM_PATCHES; p++)
-    detected_patches[p] = check_patch(buffer, xwa, p);
+    detected_patches[p] = check_patch(buffer, xwa, p, 1);
   printf("Detected patches:\n");
   for (p = FIRST_PATCH; p < NUM_PATCHES; p++) {
     if (detected_patches[p]) {
