@@ -387,7 +387,7 @@ static const struct patchdesc {
                            0x0f, 0x84, 0x38, 0x01, 0x00, 0x00, 0xeb, 0x3e}},
 };
 
-static const struct collections {
+static const struct collection {
   const char *name;
   enum PATCHES patches[18];
 } collections[] = {
@@ -442,7 +442,7 @@ static void list_patches(void) {
   }
 }
 
-static int num_collections(const struct collections *c) {
+static int num_collections(const struct collection *c) {
   int i = 0;
   while (collections[i].name) i++;
   return i;
