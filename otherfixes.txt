@@ -1,0 +1,106 @@
+=================================
+=================================
+TIE95.EXE (US Version?)
+=================================
+To fix graphical corruption, change at 0xc76b8 (0x4c82b8) from:
+a1 04 1e 6b 00 8d 54 24 14 52 68 00 00 00 03 8b 08 6a 00 8d 54 24 10 6a 00 52 50 ff 51 14
+to:
+a1 1c c1 58 00 8d 54 24 14 6a 00 6a 00 6a 00 8b 08 6a 02 8d 54 24 14 52 6a 01 50 ff 51 50
+
+---------------------------------
+Other info:
+Z-Buffer Surface: *58c474/6b1e04
+Viewport: 58c11c
+D3D Z-Buffer: 5fe88c
+
+
+
+
+
+=================================
+=================================
+XWING95.EXE (US Version?)
+=================================
+To fix graphical corruption, change at 0xb318b (0x4b3d8b) from:
+8d 44 24 14 8d 4c 24 04 50 8b 15 a4 ce 63 00 68 00 00 00 03 6a 00 6a 00 8b 02 51 52 ff 50 14
+to:
+31 c0 90 90 8d 4c 24 04 50 8b 15 24 70 56 00 90 6a 00 6a 00 6a 02 51 6a 01 8b 02 52 ff 50 50
+
+---------------------------------
+Other info:
+Z-Buffer Surface: *4dfb34/63cea4
+Viewport: 567024
+
+
+
+
+=================================
+=================================
+Z_XVT__.EXE German, Balance of Power, untested
+=================================
+To fix graphical corruption, change at 0xb5e2b from:
+50 68 00 00 00 03 6a 00 6a 00 6a 00 a1 cc ee 64 00 50 a1 cc ee 64 00 8b 00 ff 50 14
+to:
+6a 00 6a 00 6a 00 6a 02 6a 00 6a 00 a1 44 ee 64 00 50 a1 44 ee 64 00 8b 00 ff 50 50
+
+---------------------------------
+Other info:
+call        dword ptr [???+54h]
+SetDisplayMode call
+
+push        3000000h
+...
+call        dword ptr [???+14h]
+DEPTHFILL Blt
+
+
+401000
+
+
+
+4a5d79
+
+
+
+ddraw: ?data_6572c8
+w: ?data_6572b8
+h: ?data_6572d4
+bpp: data_525518
+
+data_525520
+data_525528
+
+resolution writes:
+4a4ea4
+4a4f05
+4379fa
+4a5dd2
+4a5e2e
+4a5f0b
+4a5f6e
+4a6040
+4a609c
+
+
+crash related to data_5369d4/data_5369d8 data_525534
+416d25: jng -> jmp
+
+
+size?? 52a568
+
+
+Calc x,y offset: 4a7166
+
+Create viewport: 4b7363
+Viewport: 0x64ee44
+SetViewport: 0x4b74d7
+Viewport size: 0x6a8a10, 6a8a14
+
+Surface: 0x6572c0
+
+
+SetViewport wine function: 0x7e9d1c20
+Blt wine function: 0x7e9cab60
+
+Z-Buffer clear Blt call: 0x004b6a47
+Other Blt call: 45f7ee
