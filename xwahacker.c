@@ -387,12 +387,10 @@ static const struct patchdesc {
                            0x0f, 0x84, 0x38, 0x01, 0x00, 0x00, 0xeb, 0x3e}},
 };
 
-#define NUM_COLLECTIONS 4
-
-static const struct {
+static const struct collections {
   const char *name;
   enum PATCHES patches[18];
-} collections[NUM_COLLECTIONS] = {
+} collections[] = {
   {"16 bit rendering",
     {PATCH_16BIT_FB, PATCH_STAR_16_1, PATCH_STAR_16_2, PATCH_STAR_16_3, PATCH_STAR_16_4,
      PATCH_STAR_16_5, PATCH_STAR_16_6, PATCH_STAR_16_7, PATCH_STAR_16_8, PATCH_STAR_16_9,
@@ -407,6 +405,7 @@ static const struct {
     {PATCH_BLT_CLEAR, PATCH_CLEAR_Z_16, NO_PATCH}},
   {"fixed Z-buffer clear",
     {PATCH_CLEAR2, PATCH_CLEAR_Z_F, NO_PATCH}},
+  {NULL}
 };
 
 static int check_patch(uint8_t *buffer, FILE *f, enum PATCHES patch) {
@@ -443,9 +442,15 @@ static void list_patches(void) {
   }
 }
 
+static int num_collections(const struct collections *c) {
+  int i = 0;
+  while (collections[i].name) i++;
+  return i;
+}
+
 static void list_collections(void) {
   int i, j;
-  for (i = 0; i < NUM_COLLECTIONS; i++) {
+  for (i = 0; collections[i].name; i++) {
     printf("%3i : %s : %i", i, collections[i].name, collections[i].patches[0]);
     for (j = 1; collections[i].patches[j] != NO_PATCH; j++)
       printf(", %i", collections[i].patches[j]);
@@ -598,7 +603,7 @@ int main(int argc, char *argv[]) {
         res = 0;
       goto cleanup;
     } else if (argc == 4 && strcmp(opt, "-c") == 0) {
-      int num = parse_num(argv[3], NUM_COLLECTIONS);
+      int num = parse_num(argv[3], num_collections(collections));
       if (num < 0) {
         printf("Incorrect collection number\n");
         goto cleanup;
