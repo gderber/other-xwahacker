@@ -114,7 +114,7 @@ enum PATCHES {
 };
 
 // patch groups help ensure that all patching will be reversible
-static const enum PATCHES patchgroups[] = {
+static const enum PATCHES xwa_patchgroups[] = {
   PATCH_16BIT_FB, PATCH_32BIT_FB, NO_PATCH,
   PATCH_ZDEPTH_AUTO, PATCH_ZDEPTH_16, PATCH_ZDEPTH_24, PATCH_ZDEPTH_32, NO_PATCH,
   PATCH_BLT_CLEAR, PATCH_CLEAR2, NO_PATCH,
@@ -387,10 +387,12 @@ static const struct patchdesc {
                            0x0f, 0x84, 0x38, 0x01, 0x00, 0x00, 0xeb, 0x3e}},
 };
 
-static const struct collection {
+struct collection {
   const char *name;
   enum PATCHES patches[18];
-} collections[] = {
+};
+
+static const struct collection xwa_collections[] = {
   {"16 bit rendering",
     {PATCH_16BIT_FB, PATCH_STAR_16_1, PATCH_STAR_16_2, PATCH_STAR_16_3, PATCH_STAR_16_4,
      PATCH_STAR_16_5, PATCH_STAR_16_6, PATCH_STAR_16_7, PATCH_STAR_16_8, PATCH_STAR_16_9,
@@ -405,6 +407,16 @@ static const struct collection {
     {PATCH_BLT_CLEAR, PATCH_CLEAR_Z_16, NO_PATCH}},
   {"fixed Z-buffer clear",
     {PATCH_CLEAR2, PATCH_CLEAR_Z_F, NO_PATCH}},
+  {NULL}
+};
+
+static const struct binary {
+  const char *name;
+  const char *filename;
+  const enum PATCHES *patchgroups;
+  const struct collection *collections;
+} binaries[] = {
+  {"X-Wing Alliance 2.02", "xwingalliance.exe", xwa_patchgroups, xwa_collections},
   {NULL}
 };
 
@@ -425,7 +437,7 @@ static int check_patch(uint8_t *buffer, FILE *f, enum PATCHES patch) {
   return match;
 }
 
-static void list_patches(void) {
+static void list_patches(const enum PATCHES *patchgroups) {
   int i = 0;
   int group = 1;
   printf("number : description\n");
@@ -442,13 +454,13 @@ static void list_patches(void) {
   }
 }
 
-static int num_collections(const struct collection *c) {
+static int num_collections(const struct collection *collections) {
   int i = 0;
   while (collections[i].name) i++;
   return i;
 }
 
-static void list_collections(void) {
+static void list_collections(const struct collection *collections) {
   int i, j;
   for (i = 0; collections[i].name; i++) {
     printf("%3i : %s : %i", i, collections[i].name, collections[i].patches[0]);
@@ -458,7 +470,7 @@ static void list_collections(void) {
   }
 }
 
-static const enum PATCHES *find_patchgroup(enum PATCHES p) {
+static const enum PATCHES *find_patchgroup(const enum PATCHES *patchgroups, enum PATCHES p) {
   int i = 0;
   while (patchgroups[i] != NO_PATCH) {
     const enum PATCHES *group = &patchgroups[i];
@@ -469,11 +481,11 @@ static const enum PATCHES *find_patchgroup(enum PATCHES p) {
   return NULL;
 }
 
-static int apply_patch(uint8_t *buffer, FILE *f, enum PATCHES patch) {
+static int apply_patch(uint8_t *buffer, FILE *f, const enum PATCHES *patchgroups, enum PATCHES patch) {
   const struct patchdesc *p = &patchdescs[patch];
   enum PATCHES previous = NO_PATCH;
   int i;
-  const enum PATCHES *group = find_patchgroup(patch);
+  const enum PATCHES *group = find_patchgroup(patchgroups, patch);
   assert(group);
   for (i = 0; group[i] != NO_PATCH; i++) {
     if (check_patch(buffer, f, group[i])) {
@@ -497,10 +509,11 @@ fail:
   return 0;
 }
 
-static int apply_collection(uint8_t *buffer, FILE *f, int c) {
+static int apply_collection(uint8_t *buffer, FILE *f, const struct binary *binary, int c) {
   int i;
+  const struct collection *collections = binary->collections;
   for (i = 0; collections[c].patches[i] != NO_PATCH; i++) {
-    if (!apply_patch(buffer, f, collections[c].patches[i]))
+    if (!apply_patch(buffer, f, binary->patchgroups, collections[c].patches[i]))
       return 0;
   }
   return 1;
@@ -537,10 +550,22 @@ int main(int argc, char *argv[]) {
   int i;
   int res = 1;
   enum PATCHES p;
+  const struct binary *binary;
   const char *prog = argc > 0 ? argv[0] : "xwahacker";
   if (argc < 2) {
     print_help(prog);
     return 1;
+  }
+  for (i = 0; binaries[i].name; i++) {
+    if (strcasecmp(binaries[i].filename, argv[1]))
+      break;
+  }
+  if (binaries[i].name) {
+    binary = &binaries[i];
+    printf("Detected file as %s\n", binary->name);
+  } else {
+    binary = binaries;
+    printf("Could not detect file, assuming it is %s\n", binary->name);
   }
   xwa = fopen(argv[1], "r+b");
   if (!xwa) {
@@ -557,11 +582,11 @@ int main(int argc, char *argv[]) {
   if (argc >= 3) {
     const char *opt = argv[2];
     if (argc == 3 && strcmp(opt, "-l") == 0) {
-      list_patches();
+      list_patches(binary->patchgroups);
       res = 0;
       goto cleanup;
     } else if (argc == 3 && strcmp(opt, "-c") == 0) {
-      list_collections();
+      list_collections(binary->collections);
       res = 0;
       goto cleanup;
     } else if (argc == 3 && strcmp(opt, "-r") == 0) {
@@ -597,18 +622,18 @@ int main(int argc, char *argv[]) {
         printf("Incorrect patch number\n");
         goto cleanup;
       }
-      if (!apply_patch(buffer, xwa, num))
+      if (!apply_patch(buffer, xwa, binary->patchgroups, num))
         printf("Patching failed\n");
       else
         res = 0;
       goto cleanup;
     } else if (argc == 4 && strcmp(opt, "-c") == 0) {
-      int num = parse_num(argv[3], num_collections(collections));
+      int num = parse_num(argv[3], num_collections(binary->collections));
       if (num < 0) {
         printf("Incorrect collection number\n");
         goto cleanup;
       }
-      if (!apply_collection(buffer, xwa, num))
+      if (!apply_collection(buffer, xwa, binary, num))
         printf("Patching failed\n");
       else
         res = 0;
