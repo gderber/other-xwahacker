@@ -637,10 +637,12 @@ int main(int argc, char *argv[]) {
   enum PATCHES p;
   const struct binary *binary;
   const char *prog = argc > 0 ? argv[0] : "xwahacker";
+
   if (argc < 2) {
     print_help(prog);
     return 1;
   }
+
   xwa = fopen(argv[1], "r+b");
   if (!xwa) {
     printf("Could not open file %s: %s\n", argv[1], strerror(errno));
@@ -670,6 +672,7 @@ int main(int argc, char *argv[]) {
     if (buffer[0] == 0xb8) resolutions[i][0] = RL32(buffer + 1);
     if (buffer[5] == 0xb9) resolutions[i][1] = RL32(buffer + 6);
   }
+
   if (argc >= 3) {
     const char *opt = argv[2];
     if (argc == 3 && strcmp(opt, "-l") == 0) {
@@ -735,6 +738,7 @@ int main(int argc, char *argv[]) {
       goto cleanup;
     }
   }
+
   for (p = FIRST_PATCH; p < NUM_PATCHES; p++)
     detected_patches[p] = check_patch(buffer, xwa, p, 1);
   printf("Detected patches:\n");
@@ -745,6 +749,7 @@ int main(int argc, char *argv[]) {
       printf("\n");
     }
   }
+
   res = 0;
 
 cleanup:
