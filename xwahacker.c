@@ -557,7 +557,7 @@ int main(int argc, char *argv[]) {
     return 1;
   }
   for (i = 0; binaries[i].name; i++) {
-    if (strcasecmp(binaries[i].filename, argv[1]))
+    if (!strcasecmp(binaries[i].filename, argv[1]))
       break;
   }
   if (binaries[i].name) {
