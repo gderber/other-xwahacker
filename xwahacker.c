@@ -519,6 +519,17 @@ static int count_patches(uint8_t *buffer, FILE *f, const enum PATCHES *patchgrou
   return count;
 }
 
+static int num_patchgroups(const enum PATCHES *patchgroups) {
+  int i = 0;
+  int count = 0;
+  while (patchgroups[i] != NO_PATCH) {
+    for (; patchgroups[i] != NO_PATCH; i++) /* */;
+    count++;
+    i++;
+  }
+  return count;
+}
+
 static void list_patches(const enum PATCHES *patchgroups) {
   int i = 0;
   int group = 1;
@@ -660,7 +671,8 @@ int main(int argc, char *argv[]) {
   }
   binary = &binaries[binary_best_pos];
   if (binary_best_count > 0)
-    printf("Detected file as %s with %i matches\n", binary->name, binary_best_count);
+    printf("Detected file as %s with %i matches (of %i)\n",
+           binary->name, binary_best_count, num_patchgroups(binary->patchgroups));
   else
     printf("Could not detect file, assuming it is %s\n", binary->name);
   rewind(xwa);
