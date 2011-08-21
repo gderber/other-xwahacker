@@ -35,7 +35,7 @@ static void WL32(void *ptr, uint32_t v) {
 #define BUFFER_SZ 1024
 
 /**
- * \return 0 if an error occured while reading or seeking
+ * \return 0 if an error occurred while reading or seeking
  */
 static int read_buffer(uint8_t *buffer, FILE *f, int offset, int size) {
   assert(size <= BUFFER_SZ);
