@@ -612,6 +612,31 @@ static int apply_collection(uint8_t *buffer, FILE *f, const struct binary *binar
   return 1;
 }
 
+static const int max_fps_offset = 0x13d402;
+static const int max_fps_idx[] = {0x13d403 - 0x13d402, 0x13d418 - 0x13d402};
+static int get_max_fps(uint8_t *buffer, FILE *f) {
+  if (!read_buffer(buffer, f, max_fps_offset, max_fps_idx[1] + 1))
+    return -1;
+  if (buffer[max_fps_idx[0] - 1] != 0x6a ||
+      buffer[max_fps_idx[1] - 1] != 0x6a)
+    return -1;
+  if (buffer[max_fps_idx[0]] != buffer[max_fps_idx[1]])
+    return -1;
+  return buffer[max_fps_idx[0]];
+}
+
+static int set_max_fps(uint8_t *buffer, FILE *f, int fps) {
+  if (get_max_fps(buffer, f) < 0)
+    return 0;
+  if (fps < 0 || fps > 255)
+    return 0;
+  buffer[max_fps_idx[0]] = fps;
+  buffer[max_fps_idx[1]] = fps;
+  if (!write_buffer(buffer, f, max_fps_offset, max_fps_idx[1] + 1))
+    return 0;
+  return 1;
+}
+
 static const char optionhelp[] =
   "Options:\n"
   "  -l             : List available patches\n"
@@ -620,6 +645,8 @@ static const char optionhelp[] =
   "  -p <n>         : Apply patch number <n>\n"
   "  -r             : List resolution settings (XWA only)\n"
   "  -r <n> <w> <h> : Redirect resolution <n> to <w>x<h> (XWA only)\n"
+  "  -f             : Show current max FPS limit (XWA only)\n"
+  "  -f <f>         : Set max FPS limit to <f> (XWA only)\n"
 ;
 
 static void print_help(const char *prog) {
@@ -695,6 +722,20 @@ int main(int argc, char *argv[]) {
     } else if (argc == 3 && strcmp(opt, "-c") == 0 && binary->collections) {
       list_collections(binary->collections);
       res = 0;
+      goto cleanup;
+    } else if (argc == 3 && strcmp(opt, "-f") == 0 && is_xwa) {
+      int fps = get_max_fps(buffer, xwa);
+      if (fps < 0)
+        printf("Could not read out current max FPS limit\n");
+      else
+        printf("Current max FPS limit is %i (unmodified original: 24)\n", fps);
+      goto cleanup;
+    } else if (argc == 4 && strcmp(opt, "-f") == 0 && is_xwa) {
+      int fps = parse_num(argv[3], 255);
+      if (fps <= 0)
+        printf("Invalid new max FPS limit value\n");
+      else if (!set_max_fps(buffer, xwa, fps))
+        printf("Failed setting new max FPS limit value\n");
       goto cleanup;
     } else if (argc == 3 && strcmp(opt, "-r") == 0 && is_xwa) {
       printf("Resolutions:\n");

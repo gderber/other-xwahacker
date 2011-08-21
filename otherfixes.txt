@@ -1,6 +1,3 @@
-Changing frame rate (TODO: integrate):
-0x13D402 and 0x13D417, change 0x6A 0x18 (0x18 is frame rate).
-
 =================================
 =================================
 TIE95.EXE (US Version?)

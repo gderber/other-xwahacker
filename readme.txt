@@ -36,6 +36,8 @@ nofixedclear.bat           Reverts changes from fixedclear.bat
                            graphics drivers.
 16bitmode.bat              Reverts changes from 32bitmode.bat
 
+changefps.bat              Allows changing the maximum FPS limit
+
 changeres.bat              Allows replacing one of the resolutions by another
 
 force800mode.bat           Should force X-Wing Alliance to always use the
