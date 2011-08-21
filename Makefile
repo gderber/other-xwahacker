@@ -15,12 +15,12 @@ release: xwahacker.zip
 
 xwahacker.zip: *.bat xwahacker.exe readme.txt otherfixes.txt LICENSE xwahacker.c
 	strip xwahacker.exe
-	7z a $@ $^
+	7z a -mx=9 $@ $^
 
 upload: xwahacker.zip
 	scp $^ $(SFUSER),xwahacker@frs.sourceforge.net:/home/frs/project/x/xw/xwahacker
 
 clean:
-	rm -rf xwahacker xwahacker.exe
+	rm -rf xwahacker xwahacker.exe xwahacker.zip
 
 .PHONY: all clean release upload
