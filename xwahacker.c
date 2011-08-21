@@ -679,10 +679,11 @@ int main(int argc, char *argv[]) {
   is_xwa = binary_best_pos == 0;
 
   for (i = 0; i < NUM_RES; i++) {
-    read_buffer(buffer, xwa, resdes[i].offset, 10);
     resolutions[i][0] = resolutions[i][1] = -1;
-    if (buffer[0] == 0xb8) resolutions[i][0] = RL32(buffer + 1);
-    if (buffer[5] == 0xb9) resolutions[i][1] = RL32(buffer + 6);
+    if (read_buffer(buffer, xwa, resdes[i].offset, 10)) {
+      if (buffer[0] == 0xb8) resolutions[i][0] = RL32(buffer + 1);
+      if (buffer[5] == 0xb9) resolutions[i][1] = RL32(buffer + 6);
+    }
   }
 
   if (argc >= 3) {
