@@ -17,7 +17,7 @@ xwahacker.zip: *.bat xwahacker.exe readme.txt otherfixes.txt LICENSE xwahacker.c
 	strip xwahacker.exe
 	7z a -mx=9 $@ $^
 
-upload: xwahacker.zip
+upload: xwahacker.zip readme.txt
 	scp $^ $(SFUSER),xwahacker@frs.sourceforge.net:/home/frs/project/x/xw/xwahacker
 
 clean:
