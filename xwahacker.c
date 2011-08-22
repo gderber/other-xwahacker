@@ -119,6 +119,8 @@ enum PATCHES {
 
   PATCH_XVTBOP_BLT_CLEAR,
   PATCH_XVTBOP_CLEAR2,
+  PATCH_XVTBOP_JS_CHECK,
+  PATCH_XVTBOP_NO_JS_CHECK,
   NUM_PATCHES
 };
 
@@ -162,6 +164,7 @@ static const enum PATCHES xwing95_patchgroups[] = {
 
 static const enum PATCHES xvtbop_patchgroups[] = {
   PATCH_XVTBOP_BLT_CLEAR, PATCH_XVTBOP_CLEAR2, NO_PATCH,
+  PATCH_XVTBOP_JS_CHECK, PATCH_XVTBOP_NO_JS_CHECK, NO_PATCH,
   NO_PATCH
 };
 
@@ -226,6 +229,8 @@ static const char * const patchnames[NUM_PATCHES] = {
 
   [PATCH_XVTBOP_BLT_CLEAR]   = "Z-buffer clear via Surface::Blt",
   [PATCH_XVTBOP_CLEAR2]      = "Z-buffer clear via Viewport::Clear2",
+  [PATCH_XVTBOP_JS_CHECK]    = "Check for joystick",
+  [PATCH_XVTBOP_NO_JS_CHECK] = "Skip check for joystick",
 };
 
 static const struct patchdesc {
@@ -451,6 +456,10 @@ static const struct patchdesc {
                            0x6a, 0x00, 0x6a, 0x00, 0xa1, 0x44, 0xee, 0x64,
                            0x00, 0x50, 0xa1, 0x44, 0xee, 0x64, 0x00, 0x8b,
                            0x00, 0xff, 0x50, 0x50}},
+  [PATCH_XVTBOP_JS_CHECK]    = {0x0be33d, 4, 1,
+      (const uint8_t [ 4]){0x85, 0xc0, 0x75, 0x47}},
+  [PATCH_XVTBOP_NO_JS_CHECK] = {0x0be33d, 4, 0,
+      (const uint8_t [ 4]){0x85, 0xc0, 0xeb, 0x47}},
 };
 
 struct collection {
