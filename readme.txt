@@ -54,4 +54,9 @@ tie95nofixedclear.bat      Reverts changes from tie95fixedclear.bat
 
 For X-Wing 95 (for Windows):
 xwing95fixedclear.bat      Fixes disappearing objects in X-Wing for Windows
-xwing95nofixedclear.bat    Reverts changes from tie95fixedclear.bat
+xwing95nofixedclear.bat    Reverts changes from xwing95fixedclear.bat
+
+For X-Wing versus TIE Fighter
+(tested against German version after installing BoP):
+xvtfixedclear.bat          Fixes disappearing objects
+xvtnofixedclear.bat        Reverts changes from xvtfixedclear.bat
