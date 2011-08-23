@@ -60,3 +60,8 @@ For X-Wing versus TIE Fighter
 (tested against German version after installing BoP):
 xvtfixedclear.bat          Fixes disappearing objects
 xvtnofixedclear.bat        Reverts changes from xvtfixedclear.bat
+
+For Balance of Power:
+(needs to be run in XwingTie\BalanceOfPower)
+bopfixedclear.bat          Fixes disappearing objects
+bopnofixedclear.bat        Reverts changes from bopfixedclear.bat

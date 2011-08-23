@@ -122,6 +122,9 @@ enum PATCHES {
   PATCH_XVTBOP_CLEAR2,
   PATCH_XVTBOP_JS_CHECK,
   PATCH_XVTBOP_NO_JS_CHECK,
+
+  PATCH_BOP_BLT_CLEAR,
+  PATCH_BOP_CLEAR2,
   NUM_PATCHES
 };
 
@@ -166,6 +169,11 @@ static const enum PATCHES xwing95_patchgroups[] = {
 static const enum PATCHES xvtbop_patchgroups[] = {
   PATCH_XVTBOP_BLT_CLEAR, PATCH_XVTBOP_BROKEN, PATCH_XVTBOP_CLEAR2, NO_PATCH,
   PATCH_XVTBOP_JS_CHECK, PATCH_XVTBOP_NO_JS_CHECK, NO_PATCH,
+  NO_PATCH
+};
+
+static const enum PATCHES bop_patchgroups[] = {
+  PATCH_BOP_BLT_CLEAR, PATCH_BOP_CLEAR2, NO_PATCH,
   NO_PATCH
 };
 
@@ -233,6 +241,9 @@ static const char * const patchnames[NUM_PATCHES] = {
   [PATCH_XVTBOP_CLEAR2]      = "Z-buffer clear via Viewport::Clear2",
   [PATCH_XVTBOP_JS_CHECK]    = "Check for joystick",
   [PATCH_XVTBOP_NO_JS_CHECK] = "Skip check for joystick",
+
+  [PATCH_BOP_BLT_CLEAR]      = "Z-buffer clear via Surface::Blt",
+  [PATCH_BOP_CLEAR2]         = "Z-buffer clear via Viewport::Clear2",
 };
 
 static const struct patchdesc {
@@ -473,6 +484,15 @@ static const struct patchdesc {
       (const uint8_t [ 4]){0x85, 0xc0, 0x75, 0x47}},
   [PATCH_XVTBOP_NO_JS_CHECK] = {0x0be33d, 4, 0,
       (const uint8_t [ 4]){0x85, 0xc0, 0xeb, 0x47}},
+
+  [PATCH_BOP_BLT_CLEAR]      = {0x10ddf3, 23, 1,
+      (const uint8_t [23]){0x50, 0x8b, 0x15, 0xe4, 0x6b, 0x88, 0x00, 0x68,
+                           0x00, 0x00, 0x00, 0x03, 0x6a, 0x00, 0x6a, 0x00,
+                           0x8b, 0x02, 0x51, 0x52, 0xff, 0x50, 0x14}},
+  [PATCH_BOP_CLEAR2]         = {0x10ddf3, 23, 0,
+      (const uint8_t [23]){0x90, 0x8b, 0x15, 0xc4, 0x6a, 0x66, 0x00, 0x31,
+                           0xc0, 0x50, 0x50, 0x50, 0x6a, 0x02, 0x51, 0x6a,
+                           0x01, 0x8b, 0x02, 0x52, 0xff, 0x50, 0x50}},
 };
 
 struct collection {
@@ -507,7 +527,8 @@ static const struct binary {
   {"X-Wing Alliance 2.02", "xwingalliance.exe", xwa_patchgroups, xwa_collections},
   {"TIE Fighter 95", "TIE95.EXE", tie95_patchgroups, NULL},
   {"X-Wing 95", "XWING95.EXE", xwing95_patchgroups, NULL},
-  {"X-Wing vs. TIE Fighter Balance of Power", "Z_XVT__.EXE", xvtbop_patchgroups, NULL},
+  {"X-Wing vs. TIE Fighter", "Z_XVT__.EXE", xvtbop_patchgroups, NULL},
+  {"Balance of Power", "z_xvt__.EXE", bop_patchgroups, NULL},
   {NULL}
 };
 
