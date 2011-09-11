@@ -125,6 +125,8 @@ enum PATCHES {
 
   PATCH_BOP_BLT_CLEAR,
   PATCH_BOP_CLEAR2,
+  PATCH_BOP_RANDCD,
+  PATCH_BOP_XVTCD,
   NUM_PATCHES
 };
 
@@ -174,6 +176,7 @@ static const enum PATCHES xvtbop_patchgroups[] = {
 
 static const enum PATCHES bop_patchgroups[] = {
   PATCH_BOP_BLT_CLEAR, PATCH_BOP_CLEAR2, NO_PATCH,
+  PATCH_BOP_RANDCD, PATCH_BOP_XVTCD, NO_PATCH,
   NO_PATCH
 };
 
@@ -244,6 +247,8 @@ static const char * const patchnames[NUM_PATCHES] = {
 
   [PATCH_BOP_BLT_CLEAR]      = "Z-buffer clear via Surface::Blt",
   [PATCH_BOP_CLEAR2]         = "Z-buffer clear via Viewport::Clear2",
+  [PATCH_BOP_RANDCD]         = "Ask for random CD for check",
+  [PATCH_BOP_XVTCD]          = "Ask for XvT CD for check",
 };
 
 static const struct patchdesc {
@@ -493,6 +498,10 @@ static const struct patchdesc {
       (const uint8_t [23]){0x90, 0x8b, 0x15, 0xc4, 0x6a, 0x66, 0x00, 0x31,
                            0xc0, 0x50, 0x50, 0x50, 0x6a, 0x02, 0x51, 0x6a,
                            0x01, 0x8b, 0x02, 0x52, 0xff, 0x50, 0x50}},
+  [PATCH_BOP_RANDCD]         = {0x0bfcec, 6, 1,
+      (const uint8_t [ 6]){0x0f, 0x85, 0xd4, 0x00, 0x00, 0x00}},
+  [PATCH_BOP_XVTCD]          = {0x0bfcec, 6, 0,
+      (const uint8_t [ 6]){0x67, 0xe9, 0xd4, 0x00, 0x00, 0x00}},
 };
 
 struct collection {
