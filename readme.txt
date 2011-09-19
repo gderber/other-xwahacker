@@ -1,16 +1,15 @@
-To patch X-Wing Alliance, copy the .bat and xwahacker.exe files into the
-X-Wing Alliance installation directory (the one that contains
-xwingalliance.exe).
+To patch X-Wing Alliance, extract the .bat and xwahacker.exe files
+somewhere and then copy xwingalliance.exe from the X-Wing Alliance
+installation directory there.
 Then run the appropriate .bat file to apply or revert a patch,
 see below for a list of what which one does.
+When done, copy the xwingalliance.exe back, overwriting the original
+(preferably after making a backup).
 Only version 2.02 of xwingalliance.exe is supported.
-If you are running Windows Vista (R), you may have to choose
-"Run as Administrator" or in some other way work around UAC restrictions.
 
-The file otherfixes.txt contains patch instructions for other
-games like TIE95, XWing95 and X-Wing vs. TIE/Balance of Power,
-though .bat files for those that automate the patching are included
-as well.
+The process is similar for other games like TIE95, XWing95 and
+X-Wing vs. TIE/Balance of Power, though except that the file
+to copy/replace is called TIE95.EXE, XWING95.EXE or Z_XVT__.EXE.
 
 Interpreting the output:
 > Could not detect file, assuming it is ...
