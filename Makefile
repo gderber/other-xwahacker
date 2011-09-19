@@ -13,7 +13,7 @@ xwahacker.exe: xwahacker.c
 
 release: xwahacker.zip
 
-xwahacker.zip: *.bat xwahacker.exe readme.txt otherfixes.txt LICENSE xwahacker.c
+xwahacker.zip: *.bat xwahacker.exe readme.txt LICENSE xwahacker.c
 	strip xwahacker.exe
 	7z a -mx=9 $@ $^
 
