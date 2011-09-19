@@ -35,7 +35,7 @@ nofixedclear.bat           Reverts changes from fixedclear.bat
                            graphics drivers.
 16bitmode.bat              Reverts changes from 32bitmode.bat
 
-changefps.bat              Allows changing the maximum FPS limit
+changefps.bat              Allows changing the maximum FPS limit (untested)
 
 changeres.bat              Allows replacing one of the resolutions by another
 
