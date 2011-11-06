@@ -571,6 +571,23 @@ static const struct binary {
   {NULL}
 };
 
+static const struct metapatch {
+  const char *name;
+  enum PATCHES patches[10];
+} metapatches[] = {
+  {"Z-buffer clear via Surface::Blt",
+    {PATCH_BLT_CLEAR, PATCH_TIE95_BLT_CLEAR, PATCH_XWING95_BLT_CLEAR,
+     PATCH_XVTBOP_BLT_CLEAR, PATCH_BOP_BLT_CLEAR, PATCH_BOP_EN_BLT_CLEAR,
+     NO_PATCH}
+  },
+  {"Z-buffer clear via Viewport::Clear2",
+    {PATCH_CLEAR2, PATCH_TIE95_CLEAR2, PATCH_XWING95_CLEAR2,
+     PATCH_XVTBOP_CLEAR2, PATCH_BOP_CLEAR2, PATCH_BOP_EN_CLEAR2,
+     NO_PATCH}
+  },
+  {NULL}
+};
+
 static int check_patch(uint8_t *buffer, FILE *f, enum PATCHES patch, int silent) {
   const struct patchdesc *p = &patchdescs[patch];
   int match;
@@ -645,6 +662,18 @@ static void list_collections(const struct collection *collections) {
   }
 }
 
+static int num_metapatches(void) {
+  int i = 0;
+  while (metapatches[i].name) i++;
+  return i;
+}
+
+static void list_metapatches(void) {
+  int i;
+  for (i = 0; metapatches[i].name; i++)
+    printf("%3i : %s\n", i, metapatches[i].name);
+}
+
 static const enum PATCHES *find_patchgroup(const enum PATCHES *patchgroups, enum PATCHES p) {
   int i = 0;
   while (patchgroups[i] != NO_PATCH) {
@@ -694,6 +723,21 @@ static int apply_collection(uint8_t *buffer, FILE *f, const struct binary *binar
   return 1;
 }
 
+static int apply_metapatch(uint8_t *buffer, FILE *f, const struct binary *binary, int m) {
+  int i;
+  int applied = 0;
+  int valid = 0;
+  for (i = 0; metapatches[m].patches[i] != NO_PATCH; i++) {
+    enum PATCHES p = metapatches[m].patches[i];
+    if (!find_patchgroup(binary->patchgroups, p))
+      continue;
+    valid++;
+    if (apply_patch(buffer, f, binary->patchgroups, p))
+      applied++;
+  }
+  return valid && applied == valid;
+}
+
 static const int max_fps_offset = 0x13d402;
 static const int max_fps_idx[] = {0x13d403 - 0x13d402, 0x13d418 - 0x13d402};
 static int get_max_fps(uint8_t *buffer, FILE *f) {
@@ -722,6 +766,8 @@ static int set_max_fps(uint8_t *buffer, FILE *f, int fps) {
 static const char optionhelp[] =
   "Options:\n"
   "  -l             : List available patches\n"
+  "  -m             : List available metapatches\n"
+  "  -m <n>         : Apply metapatch number <n>\n"
   "  -c             : List available patch collections (XWA only)\n"
   "  -c <n>         : Apply patch collection <n> (XWA only)\n"
   "  -p <n>         : Apply patch number <n>\n"
@@ -805,6 +851,10 @@ int main(int argc, char *argv[]) {
       list_collections(binary->collections);
       res = 0;
       goto cleanup;
+    } else if (argc == 3 && strcmp(opt, "-m") == 0) {
+      list_metapatches();
+      res = 0;
+      goto cleanup;
     } else if (argc == 3 && strcmp(opt, "-f") == 0 && is_xwa) {
       int fps = get_max_fps(buffer, xwa);
       if (fps < 0)
@@ -864,6 +914,17 @@ int main(int argc, char *argv[]) {
         goto cleanup;
       }
       if (!apply_collection(buffer, xwa, binary, num))
+        printf("Patching failed\n");
+      else
+        res = 0;
+      goto cleanup;
+    } else if (argc == 4 && strcmp(opt, "-m") == 0) {
+      int num = parse_num(argv[3], num_metapatches());
+      if (num < 0) {
+        printf("Incorrect metapatch number\n");
+        goto cleanup;
+      }
+      if (!apply_metapatch(buffer, xwa, binary, num))
         printf("Patching failed\n");
       else
         res = 0;
