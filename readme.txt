@@ -55,12 +55,9 @@ For X-Wing 95 (for Windows):
 xwing95fixedclear.bat      Fixes disappearing objects in X-Wing for Windows
 xwing95nofixedclear.bat    Reverts changes from xwing95fixedclear.bat
 
-For X-Wing versus TIE Fighter
-(tested against German version after installing BoP):
+For X-Wing versus TIE Fighter, Balance of Power:
+Tested against German version after installing BoP.
+Patch z_xvt__.exe in XwingTie for XvT, patch the one in
+XwingTie\BalanceOfPower for BoP.
 xvtfixedclear.bat          Fixes disappearing objects
 xvtnofixedclear.bat        Reverts changes from xvtfixedclear.bat
-
-For Balance of Power:
-(needs to be run in XwingTie\BalanceOfPower)
-bopfixedclear.bat          Fixes disappearing objects
-bopnofixedclear.bat        Reverts changes from bopfixedclear.bat

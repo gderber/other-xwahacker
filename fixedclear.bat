@@ -1,3 +1,3 @@
 @echo off
-xwahacker xwingalliance.exe -c 3
+xwahacker xwingalliance.exe -m 1
 pause
