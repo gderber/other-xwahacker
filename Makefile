@@ -9,7 +9,7 @@ xwahacker: xwahacker.c
 	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@
 
 xwahacker.exe: xwahacker.c
-	$(CROSS_CC) $(CFLAGS) $(LDFLAGS) $^ -o $@
+	$(CROSS_CC) -static $(CFLAGS) $(LDFLAGS) $^ -o $@
 
 release: xwahacker.zip
 
