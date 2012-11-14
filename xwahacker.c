@@ -4,19 +4,23 @@
 #include <errno.h>
 #include <stdint.h>
 #include <assert.h>
+#include <math.h>
 
 #define DEBUG 0
 
 #define NUM_RES 4
 static const struct {
   int offset;
+  int fov_offset;
   int width;
   int height;
 } resdes[NUM_RES] = {
-  {0x10a334,  800,  600},
-  {0x10a37c, 1152,  864},
-  {0x10a3bb, 1600, 1200},
-  {0x10a3dd,  640,  480},
+  {0x10a3dd, 0x10f422,  640,  480}, // 0
+  {0x10a334, 0x10f44f,  800,  600}, // 1
+// 2: 1024x768
+  {0x10a37c, 0x10f4a6, 1152,  864}, // 3
+// 4: 1280x1024
+  {0x10a3bb, 0x10f4fa, 1600, 1200}, // 5
 };
 
 static uint32_t RL32(const void *ptr) {
@@ -772,7 +776,10 @@ static const char optionhelp[] =
   "  -c <n>         : Apply patch collection <n> (XWA only)\n"
   "  -p <n>         : Apply patch number <n>\n"
   "  -r             : List resolution settings (XWA only)\n"
-  "  -r <n> <w> <h> : Redirect resolution <n> to <w>x<h> (XWA only)\n"
+  "  -r <n> <w> <h> [<s> [<f>]]\n"
+  "                 : Redirect resolution <n> to <w>x<h> (XWA only)\n"
+  "                   optionally specify a HUD scale factor (s)\n"
+  "                   and the vertical field of view (f)\n"
   "  -f             : Show current max FPS limit (XWA only)\n"
   "  -f <f>         : Set max FPS limit to <f> (XWA only)\n"
 ;
@@ -790,10 +797,71 @@ static int parse_num(const char *s, int limit) {
   return num;
 }
 
+static float parse_float(const char *s, float min, float max) {
+  char *end;
+  float num = strtof(s, &end);
+  if (*end || num < min || num > max)
+    return -1.0;
+  return num;
+}
+
+struct resopts {
+  int w;
+  int h;
+  union {
+    uint32_t i;
+    float f;
+  } hud_scale;
+  int fov;
+};
+
+static const float pi = 3.14159265358979323846;
+
+static int default_fov(int height) {
+  int fov = height * 1.0666 + 0.5;
+  return fov > 0 ? fov : 1;
+}
+
+static float default_hud_scale(int height) {
+  float res = height / 600.0;
+  return res > 1.0 ? res : 1.0;
+}
+
+static float fov2deg(int fov, int height) {
+  return atan((float)height / fov) * 2 / pi * 180;
+}
+
+static int deg2fov(float deg, int height) {
+  int fov = height / tan(deg / 180 * pi / 2) + 0.5;
+  return fov > 0 ? fov : 1;
+}
+
+static void read_res(uint8_t *buffer, FILE *f, struct resopts res[NUM_RES]) {
+  int i;
+  for (i = 0; i < NUM_RES; i++) {
+    res[i].w = res[i].h = res[i].fov = -1;
+    res[i].hud_scale.i = 0xffffffffu;
+    if (read_buffer(buffer, f, resdes[i].offset, 10)) {
+      if (buffer[0] == 0xb8) res[i].w = RL32(buffer + 1);
+      if (buffer[5] == 0xb9) res[i].h = RL32(buffer + 6);
+    }
+    if (read_buffer(buffer, f, resdes[i].fov_offset, 20)) {
+      static const uint8_t instr[2][6] = {
+        {0xc7, 0x05, 0xb8, 0x02, 0x60, 0x00},
+        {0xc7, 0x05, 0x6c, 0xab, 0x91, 0x00}
+      };
+      if (memcmp(buffer, instr[0], 6) == 0)
+        res[i].hud_scale.i = RL32(buffer + 6);
+      if (memcmp(buffer + 10, instr[1], 6) == 0)
+        res[i].fov = RL32(buffer + 16);
+    }
+  }
+}
+
 int main(int argc, char *argv[]) {
   int binary_best_pos = 0;
   int binary_best_count = 0;
-  int resolutions[NUM_RES][2];
+  struct resopts resolutions[NUM_RES];
   int detected_patches[NUM_PATCHES];
   uint8_t *buffer = NULL;
   FILE *xwa = 0;
@@ -833,13 +901,7 @@ int main(int argc, char *argv[]) {
   rewind(xwa);
   is_xwa = binary_best_pos == 0;
 
-  for (i = 0; i < NUM_RES; i++) {
-    resolutions[i][0] = resolutions[i][1] = -1;
-    if (read_buffer(buffer, xwa, resdes[i].offset, 10)) {
-      if (buffer[0] == 0xb8) resolutions[i][0] = RL32(buffer + 1);
-      if (buffer[5] == 0xb9) resolutions[i][1] = RL32(buffer + 6);
-    }
-  }
+  read_res(buffer, xwa, resolutions);
 
   if (argc >= 3) {
     const char *opt = argv[2];
@@ -872,18 +934,27 @@ int main(int argc, char *argv[]) {
     } else if (argc == 3 && strcmp(opt, "-r") == 0 && is_xwa) {
       printf("Resolutions:\n");
       for (i = 0; i < NUM_RES; i++)
-        printf("%i: %5i x %5i mapped to %5i x %5i\n", i, resdes[i].width, resdes[i].height, resolutions[i][0], resolutions[i][1]);
+        printf("%i: %5i x %5i mapped to %5i x %5i, fov: %.2f deg%s, HUD scale %f%s\n",
+               i, resdes[i].width, resdes[i].height,
+               resolutions[i].w, resolutions[i].h,
+               fov2deg(resolutions[i].fov, resolutions[i].h),
+               resolutions[i].fov == default_fov(resolutions[i].h) ? " (default)" : "",
+               resolutions[i].hud_scale.f,
+               resolutions[i].hud_scale.f == default_hud_scale(resolutions[i].h) ? " (default)" : "");
       res = 0;
       goto cleanup;
-    } else if (argc == 6 && strcmp(opt, "-r") == 0 && is_xwa) {
+    } else if (argc >= 6 && argc <= 8 && strcmp(opt, "-r") == 0 && is_xwa) {
       int num = parse_num(argv[3], NUM_RES);
       int w = parse_num(argv[4], 10000);
       int h = parse_num(argv[5], 10000);
+      float hud_scale = argc > 6 ? parse_float(argv[6], 0.1, 10) : -1;
+      float deg = argc > 7 ? parse_float(argv[7], 10, 170) : -1;
       if (num < 0 || w < 0 || h < 0) {
         printf("Incorrect resolution values\n");
         goto cleanup;
       }
-      if (resolutions[num][0] < 0 || resolutions[num][1] < 0) {
+      if (resolutions[num].w < 0 || resolutions[num].h < 0 ||
+          resolutions[num].fov < 0 || resolutions[num].hud_scale.i == 0xffffffffu) {
         printf("Could not detect current values, aborting\n");
         goto cleanup;
       }
@@ -894,6 +965,14 @@ int main(int argc, char *argv[]) {
         goto cleanup;
       }
       printf("Updated resolution %i to map to %5i x %5i\n", num, w, h);
+      resolutions[num].hud_scale.f = hud_scale > 0 ? hud_scale : default_hud_scale(h);
+      WL32(buffer, resolutions[num].hud_scale.i);
+      WL32(buffer + 4, deg > 0 ? deg2fov(deg, h) : default_fov(h));
+      if (!write_buffer(buffer, xwa, resdes[num].fov_offset + 6, 4) ||
+          !write_buffer(buffer + 4, xwa, resdes[num].fov_offset + 16, 4)) {
+        printf("Error fixing up fov/HUD scale\n");
+        goto cleanup;
+      }
       res = 0;
       goto cleanup;
     } else if (argc == 4 && strcmp(opt, "-p") == 0) {

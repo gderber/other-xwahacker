@@ -2,6 +2,7 @@ CC=gcc
 CROSS_CC=i686-w64-mingw32-gcc
 CFLAGS=-Wall -Wdeclaration-after-statement -Wpointer-arith -Wredundant-decls -Wcast-qual -Wwrite-strings -g -Os
 CFLAGS+=-std=c99 -D_XOPEN_SOURCE=500
+LDFLAGS=-lm
 
 all: xwahacker.exe
 
