@@ -12,7 +12,14 @@ X-Wing vs. TIE/Balance of Power, though except that the file
 to copy/replace is called TIE95.EXE, XWING95.EXE or Z_XVT__.EXE.
 
 Interpreting the output:
+> 'xwahacker' is not recognized as an internal or external command, operable program or batch file.
+
+Means: the .bat file could not start the xwahacker.exe file.
+Unless you forgot to extract that file to the same location
+as the .bat files, I have no explanation for this.
+
 > Could not detect file, assuming it is ...
+
 Means: the file you are trying to patch is not supported at all
 
 > Detected file as ...
@@ -35,9 +42,14 @@ nofixedclear.bat           Reverts changes from fixedclear.bat
                            graphics drivers.
 16bitmode.bat              Reverts changes from 32bitmode.bat
 
-changefps.bat              Allows changing the maximum FPS limit (untested)
+changefps.bat              Allows changing the maximum FPS limit.
+                           Useless since it only affects FPS in the main menu,
+                           not for gameplay.
 
-changeres.bat              Allows replacing one of the resolutions by another
+changeres.bat              Allows replacing one of the resolutions by another.
+                           Note: this now also updates the HUD size and field
+                           of view, by using xwahacker.exe directly you can
+                           also change these any way you want.
 
 force800mode.bat           Should force X-Wing Alliance to always use the
                            800x600 mode (the actual resolution can be changed
