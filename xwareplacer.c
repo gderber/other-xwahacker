@@ -41,13 +41,17 @@ static const char refstr[23][10] = {
 static void copy(FILE *to, FILE *from) {
   void *buf = malloc(BLOCK_SIZE);
   int got = 0;
+  if (!buf)
+    goto err_out;
   do {
     got = fread(buf, 1, BLOCK_SIZE, from);
     if (got < 0)
-      return;
+      goto err_out;
     if (got)
       got = fwrite(buf, 1, got, to);
   } while (got == BLOCK_SIZE);
+err_out:
+  free(buf);
 }
 
 static int check_and_replace(const char *replace) {
