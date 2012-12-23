@@ -6,10 +6,10 @@ LDFLAGS=-lm
 
 all: xwahacker.exe
 
-xwahacker: xwahacker.c
+%: %.c
 	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@
 
-xwahacker.exe: xwahacker.c
+%.exe: %.c
 	$(CROSS_CC) -static $(CFLAGS) $(LDFLAGS) $^ -o $@
 
 release: xwahacker.zip
