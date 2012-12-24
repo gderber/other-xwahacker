@@ -1,3 +1,9 @@
+Since version 2.0 xwahacker contains a new tool: xwareplacer.
+It automates replacing temp.tie when playing multiplayer
+missions that use multiple hyperspace areas (e.g. when playing
+the singleplayer mission in multiplayer).
+For details see readme-xwareplacer.txt.
+
 To patch X-Wing Alliance, extract the .bat and xwahacker.exe files
 somewhere and then copy xwingalliance.exe from the X-Wing Alliance
 installation directory there.
