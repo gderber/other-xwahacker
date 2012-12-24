@@ -209,7 +209,7 @@ int main(int argc, char *argv[]) {
   struct stat statbuf;
   if (stat("SKIRMISH", &statbuf) != 0) {
     fprintf(stderr, "Could not find SKIRMISH directory, started at wrong location?\n");
-    return 1;
+    goto err_out;
   }
   list = read_list(list_fname);
   if (!list)
@@ -218,7 +218,7 @@ int main(int argc, char *argv[]) {
     FILE *test = fopen(list[i], "rb");
     if (!test) {
       fprintf(stderr, "Could not open file %i from list: %s\n", i, list[i]);
-      return 1;
+      goto err_out;
     }
     fclose(test);
   }
@@ -247,4 +247,10 @@ int main(int argc, char *argv[]) {
   noblock_uninit();
   free(list);
   return 0;
+
+err_out:
+  fprintf(stderr, "Press enter to exit\n");
+  getchar();
+  free(list);
+  return 1;
 }
