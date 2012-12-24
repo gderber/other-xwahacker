@@ -22,6 +22,11 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#ifdef _WIN32
+#include <conio.h>
+#else
+#include <termios.h>
+#endif
 
 static const char refstr[23][10] = {
   {0x12, 0, 0x0f, 0, 0, 0, 0, 0, 1, 0},
@@ -93,21 +98,152 @@ err_out:
   return 0;
 }
 
+#define MAX_ENTRIES 128
+#define MAX_LEN 128
+
+typedef char NameEntry[MAX_LEN];
+
+static NameEntry *read_list(const char *fname)
+{
+  static const char whitespace[] = " \r\n";
+  int i;
+  NameEntry *list = calloc(MAX_ENTRIES + 1, sizeof(*list));
+  FILE *list_file = NULL;
+  list_file = fopen(fname, "r");
+  if (!list_file) {
+    fprintf(stderr, "Could not open list file %s\n", fname);
+    goto err_out;
+  }
+  for (i = 0; i < MAX_ENTRIES; i++) {
+    int len;
+    if (!fgets(list[i], sizeof(*list), list_file)) {
+      list[i][0] = 0;
+      break;
+    }
+    len = strlen(list[i]);
+    // remove trailing newline
+    while (len > 0 && strchr(whitespace, list[i][len - 1]))
+      len--;
+    list[i][len] = 0;
+    // skip empty and comment lines
+    if (len == 0 || list[i][0] == '#') {
+      i--;
+      continue;
+    }
+  }
+  if (!list[0][0]) {
+    fprintf(stderr, "List file %s does not contain any files\n", fname);
+    goto err_out;
+  }
+  fclose(list_file);
+  return list;
+err_out:
+  free(list);
+  if (list_file)
+    fclose(list_file);
+  return NULL;
+}
+
+static void print_list(NameEntry *list, int pos) {
+  int i;
+  printf("\nNew position:\n");
+  for (i = 0; list[i][0]; i++) {
+    printf(i == pos ? "--> " : "    ");
+    printf("%s", list[i]);
+    printf(i == pos ? " <--" : "    ");
+    printf("\n");
+  }
+}
+
+static void move_list(NameEntry *list, int *pos, int dir) {
+  *pos += dir > 0;
+  *pos -= dir < 0;
+  if (*pos < 0) {
+    int i = 0;
+    while (list[i][0]) i++;
+    *pos = i - 1;
+  } else if (!list[*pos][0])
+    *pos = 0;
+}
+
+#ifdef _WIN32
+static void noblock_init(void) {}
+static void noblock_uninit(void) {}
+#else
+static struct termios orig_term;
+
+static void noblock_init(void) {
+  struct termios new_term;
+  tcgetattr(0, &orig_term);
+  new_term = orig_term;
+  new_term.c_lflag &= ~ICANON & ~ECHO;
+  new_term.c_cc[VMIN] = 1;
+  new_term.c_cc[VTIME] = 0;
+  tcsetattr(0, TCSANOW, &new_term);
+}
+
+static void noblock_uninit(void) {
+  tcsetattr(0, TCSANOW, &orig_term);
+}
+#endif
+
+static int get_char_noblock(void) {
+#ifdef _WIN32
+  if (!_kbhit())
+    return -1;
+  return _getch();
+#else
+  char res;
+  if (read(0, &res, 1) != 1)
+    return -1;
+  return res;
+#endif
+}
+
 int main(int argc, char *argv[]) {
+  int i;
+  int list_pos = 0;
+  const char *list_fname = argc == 2 ? argv[1] : "xwareplacer-list";
+  NameEntry *list = NULL;
   struct stat statbuf;
   if (stat("SKIRMISH", &statbuf) != 0) {
     fprintf(stderr, "Could not find SKIRMISH directory, started at wrong location?\n");
     return 1;
   }
-  // TODO: read in list of replacement files
-  // TODO: check we can open all files in list
-  // TODO: print out list?
-  do {
-    if (check_and_replace("test.tie")) {
-      // TODO: move on to next in list
-      // TODO: print out list with updated position
+  list = read_list(list_fname);
+  if (!list)
+    return 1;
+  for (i = 0; list[i][0]; i++) {
+    FILE *test = fopen(list[i], "rb");
+    if (!test) {
+      fprintf(stderr, "Could not open file %i from list: %s\n", i, list[i]);
+      return 1;
     }
-    // TODO: check input and allow moving up/down in list
+    fclose(test);
+  }
+  print_list(list, list_pos);
+  noblock_init();
+  do {
+    int key;
+    if (check_and_replace(list[list_pos])) {
+      move_list(list, &list_pos, 1);
+      print_list(list, list_pos);
+    }
+
+    // check input and allow moving up/down in list
+    key = get_char_noblock();
+    switch (key) {
+    case 'w':
+    case 's':
+      move_list(list, &list_pos, key == 'w' ? 1 : -1);
+      print_list(list, list_pos);
+    }
+    if (key == 'q')
+      break;
+
     usleep(0.1 * 1000 * 1000);
   } while (1);
+  noblock_uninit();
+  free(list);
+  return 0;
 }
