@@ -153,6 +153,7 @@ static void print_list(NameEntry *list, int pos) {
     printf(i == pos ? " <--" : "    ");
     printf("\n");
   }
+  printf("Press 's' to move to next entry, 'w' to previous, 'q' to exit\n");
 }
 
 static void move_list(NameEntry *list, int *pos, int dir) {
@@ -203,7 +204,7 @@ static int get_char_noblock(void) {
 int main(int argc, char *argv[]) {
   int i;
   int list_pos = 0;
-  const char *list_fname = argc == 2 ? argv[1] : "xwareplacer-list";
+  const char *list_fname = argc == 2 ? argv[1] : "xwareplacer-list.txt";
   NameEntry *list = NULL;
   struct stat statbuf;
   if (stat("SKIRMISH", &statbuf) != 0) {
@@ -235,13 +236,13 @@ int main(int argc, char *argv[]) {
     switch (key) {
     case 'w':
     case 's':
-      move_list(list, &list_pos, key == 'w' ? 1 : -1);
+      move_list(list, &list_pos, key == 's' ? 1 : -1);
       print_list(list, list_pos);
     }
     if (key == 'q')
       break;
 
-    usleep(0.1 * 1000 * 1000);
+    usleep(0.01 * 1000 * 1000);
   } while (1);
   noblock_uninit();
   free(list);
