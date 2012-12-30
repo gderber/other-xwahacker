@@ -4,6 +4,8 @@ missions that use multiple hyperspace areas (e.g. when playing
 the singleplayer mission in multiplayer).
 For details see readme-xwareplacer.txt.
 
+Version 2.1 fixes some issues with xwareplacer.
+
 To patch X-Wing Alliance, extract the .bat and xwahacker.exe files
 somewhere and then copy xwingalliance.exe from the X-Wing Alliance
 installation directory there.
