@@ -28,6 +28,7 @@
 #include <termios.h>
 #endif
 
+static const int refstr_skip = 4;
 static const char refstr[23][10] = {
   {0x12, 0, 0x0f, 0, 0, 0, 0, 0, 1, 0},
   "",
@@ -68,13 +69,13 @@ static int check_and_replace(const char *replace) {
 
   // check for auto-generated multi-location temp.tie
   res = stat("SKIRMISH/temp.tie", &statbuf);
-  if (res != 0 || statbuf.st_size != 157648)
+  if (res != 0)
     goto err_out;
   file = fopen("SKIRMISH/temp.tie", "rb");
   if (!file)
     goto err_out;
   res = fread(buf, 1, sizeof(buf), file);
-  if (res != sizeof(buf) || memcmp(buf, refstr, sizeof(refstr)))
+  if (res != sizeof(buf) || memcmp(buf + refstr_skip, refstr[0] + refstr_skip, sizeof(refstr) - refstr_skip))
     goto err_out;
 
   // try to replace it
