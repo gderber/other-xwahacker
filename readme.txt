@@ -6,6 +6,8 @@ For details see readme-xwareplacer.txt.
 
 Version 2.1 fixes some issues with xwareplacer.
 
+Version 2.2 fixes forcing 800x600 mode to choose correct FOV/HUD size.
+
 To patch X-Wing Alliance, extract the .bat and xwahacker.exe files
 somewhere and then copy xwingalliance.exe from the X-Wing Alliance
 installation directory there.
