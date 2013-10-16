@@ -1,4 +1,5 @@
 CC=gcc
+DIET=diet gcc -m32
 CROSS_CC=i686-w64-mingw32-gcc
 CFLAGS=-Wall -Wdeclaration-after-statement -Wpointer-arith -Wredundant-decls -Wcast-qual -Wwrite-strings -g -Os
 CFLAGS+=-std=c99 -D_XOPEN_SOURCE=500
@@ -8,10 +9,13 @@ VERSION=2.2
 all: xwahacker.unsigned.exe xwareplacer.unsigned.exe
 
 %: %.c
-	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@
+	$(CC) $(CFLAGS) $^ $(LDFLAGS) -o $@
+
+%.static: %.c
+	$(DIET) $(CFLAGS) $^ $(LDFLAGS) -s -o $@
 
 %.unsigned.exe: %.c
-	$(CROSS_CC) -static $(CFLAGS) $(LDFLAGS) $^ -o $@
+	$(CROSS_CC) -static $(CFLAGS) $^ $(LDFLAGS) -o $@
 
 %.exe: %.unsigned.exe
 	strip $^
