@@ -155,6 +155,9 @@ enum PATCHES {
   PATCH_BOP_EN_CLEAR2,
   PATCH_BOP_EN_RANDCD,
   PATCH_BOP_EN_XVTCD,
+
+  PATCH_NO_MSGLOOP,
+  PATCH_ADD_MSGLOOP,
   NUM_PATCHES
 };
 
@@ -184,6 +187,7 @@ static const enum PATCHES xwa_patchgroups[] = {
   PATCH_SELECT_RES_2, PATCH_FORCE_RES_2, NO_PATCH,
   PATCH_PRTSCR_8_1, PATCH_PRTSCR_32_1, NO_PATCH,
   PATCH_PRTSCR_8_2, PATCH_PRTSCR_32_2, NO_PATCH,
+  PATCH_NO_MSGLOOP, PATCH_ADD_MSGLOOP, NO_PATCH,
   NO_PATCH
 };
 
@@ -291,6 +295,9 @@ static const char * const patchnames[NUM_PATCHES] = {
   [PATCH_BOP_EN_CLEAR2]      = "Z-buffer clear via Viewport::Clear2",
   [PATCH_BOP_EN_RANDCD]      = "Ask for random CD for check",
   [PATCH_BOP_EN_XVTCD]       = "Ask for XvT CD for check",
+
+  [PATCH_NO_MSGLOOP]         = "Don't run the message loop",
+  [PATCH_ADD_MSGLOOP]        = "Always run message loop, for Linux/Wine",
 };
 
 static const struct patchdesc {
@@ -561,6 +568,11 @@ static const struct patchdesc {
       (const uint8_t [ 6]){0x0f, 0x85, 0xd4, 0x00, 0x00, 0x00}},
   [PATCH_BOP_EN_XVTCD]       = {0x0bd7dc, 6, 0,
       (const uint8_t [ 6]){0x67, 0xe9, 0xd4, 0x00, 0x00, 0x00}},
+
+  [PATCH_NO_MSGLOOP]         = {0x10ce98, 8, 1,
+      (const uint8_t [ 8]){0x5d, 0xc3, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90}},
+  [PATCH_ADD_MSGLOOP]        = {0x10ce98, 8, 0,
+      (const uint8_t [ 8]){0x5d, 0x67, 0xe8, 0xe1, 0x2f, 0x03, 0x00, 0xc3}},
 };
 
 struct collection {
