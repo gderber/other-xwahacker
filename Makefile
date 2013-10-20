@@ -6,7 +6,7 @@ CFLAGS+=-std=c99 -D_XOPEN_SOURCE=500
 LDFLAGS=-lm
 VERSION=2.3
 
-all: xwahacker.unsigned.exe xwareplacer.unsigned.exe
+all: xwahacker.unsigned.exe xwareplacer.unsigned.exe xwahacker.static xwareplacer.static
 
 %: %.c
 	$(CC) $(CFLAGS) $^ $(LDFLAGS) -o $@
@@ -23,13 +23,13 @@ all: xwahacker.unsigned.exe xwareplacer.unsigned.exe
 
 release: xwahacker-${VERSION}.zip
 
-xwahacker-${VERSION}.zip: *.bat xwahacker.exe xwareplacer.exe readme.txt LICENSE xwahacker.c xwareplacer.c
+xwahacker-${VERSION}.zip: *.bat xwahacker.exe xwareplacer.exe xwahacker.static xwareplacer.static readme.txt readme-linux.txt readme-xwareplacer.txt LICENSE xwahacker.c xwareplacer.c
 	7z a -mx=9 $@ $^
 
 upload: xwahacker-${VERSION}.zip readme.txt
 	scp $^ $(SFUSER),xwahacker@frs.sourceforge.net:/home/frs/project/x/xw/xwahacker
 
 clean:
-	rm -rf xwahacker xwahacker.exe xwahacker.unsigned.exe xwahacker*.zip xwareplacer xwareplacer.unsigned.exe xwareplacer.exe
+	rm -rf xwahacker xwahacker.exe xwahacker.unsigned.exe xwahacker.static xwahacker*.zip xwareplacer xwareplacer.unsigned.exe xwareplacer.exe xwareplacer.static
 
 .PHONY: all clean release upload
