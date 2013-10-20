@@ -990,7 +990,9 @@ int main(int argc, char *argv[]) {
       int w = parse_num(argv[4], 10000);
       int h = parse_num(argv[5], 10000);
       float hud_scale = argc > 6 ? parse_float(argv[6], 0.1, 10) : -1;
+      int skip_hud_scale = argc > 6 && argv[6][0] == 'k';
       float deg = argc > 7 ? parse_float(argv[7], 10, 170) : -1;
+      int skip_deg = argc > 7 && argv[7][0] == 'k';
       if (num < 0 || w < 0 || h < 0) {
         printf("Incorrect resolution values\n");
         goto cleanup;
@@ -1010,8 +1012,8 @@ int main(int argc, char *argv[]) {
       resolutions[num].hud_scale.f = hud_scale > 0 ? hud_scale : default_hud_scale(h);
       WL32(buffer, resolutions[num].hud_scale.i);
       WL32(buffer + 4, deg > 0 ? deg2fov(deg, h) : default_fov(h));
-      if (!write_buffer(buffer, xwa, resdes[num].fov_offset + 6, 4) ||
-          !write_buffer(buffer + 4, xwa, resdes[num].fov_offset + 16, 4)) {
+      if ((!skip_hud_scale && !write_buffer(buffer, xwa, resdes[num].fov_offset + 6, 4)) ||
+          (!skip_deg && !write_buffer(buffer + 4, xwa, resdes[num].fov_offset + 16, 4))) {
         printf("Error fixing up fov/HUD scale\n");
         goto cleanup;
       }
