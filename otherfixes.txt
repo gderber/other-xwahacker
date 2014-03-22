@@ -104,3 +104,12 @@ Blt wine function: 0x7e9cab60
 
 Z-Buffer clear Blt call: 0x004b6a47
 Other Blt call: 45f7ee
+
+
+
+NWN:
+Far fog: change
+818af94 !   push        42340000h
+to
+818af94 !   push        42d00000h
+(818b990 instead in 1.32)
