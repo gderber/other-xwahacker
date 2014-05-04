@@ -841,7 +841,7 @@ static int parse_num(const char *s, int limit) {
 
 static float parse_float(const char *s, float min, float max) {
   char *end;
-  float num = strtof(s, &end);
+  double num = strtod(s, &end);
   if (*end || num < min || num > max)
     return -1.0;
   return num;
