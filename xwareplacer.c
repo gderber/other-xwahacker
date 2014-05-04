@@ -24,6 +24,10 @@
 #include <unistd.h>
 #ifdef _WIN32
 #include <conio.h>
+#include <windows.h>
+#define usleep(a) Sleep(a/1000)
+// replace both function and struct
+#define stat _stat
 #else
 #include <termios.h>
 #endif
