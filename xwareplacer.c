@@ -102,8 +102,7 @@ err_out:
 
 typedef char NameEntry[MAX_LEN];
 
-static NameEntry *read_list(const char *fname)
-{
+static NameEntry *read_list(const char *fname) {
   static const char whitespace[] = " \r\n";
   int i;
   NameEntry *list = calloc(MAX_ENTRIES + 1, sizeof(*list));
