@@ -4,6 +4,7 @@ CROSS_CC=i686-w64-mingw32-gcc
 CFLAGS=-Wall -Wdeclaration-after-statement -Wpointer-arith -Wredundant-decls -Wcast-qual -Wwrite-strings -g -Os
 # is supposedly the default, but obviously not on MinGW-w64
 CFLAGS+=-Qn
+CFLAGS+=-fomit-frame-pointer
 CFLAGS+=-std=c99 -D_XOPEN_SOURCE=500
 LDFLAGS=-lm
 VERSION=2.3
