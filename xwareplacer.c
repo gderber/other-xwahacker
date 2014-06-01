@@ -155,8 +155,8 @@ static void print_list(NameEntry *list, int pos) {
 }
 
 static void move_list(NameEntry *list, int *pos, int dir) {
-  *pos += dir > 0;
-  *pos -= dir < 0;
+  // dir is only allowed to be 1 or -1
+  *pos += dir;
   if (*pos < 0) {
     int i = 0;
     while (list[i][0]) i++;
