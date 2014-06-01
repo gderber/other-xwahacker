@@ -907,7 +907,7 @@ int main(int argc, char *argv[]) {
   int binary_best_count = 0;
   struct resopts resolutions[NUM_RES];
   int detected_patches[NUM_PATCHES];
-  uint8_t *buffer = NULL;
+  uint8_t buffer[BUFFER_SZ];
   FILE *xwa = 0;
   int is_xwa;
   int i;
@@ -926,7 +926,6 @@ int main(int argc, char *argv[]) {
     printf("Could not open file %s: %s\n", argv[1], strerror(errno));
     return 1;
   }
-  buffer = malloc(BUFFER_SZ);
 
   // check with which binary description we get the most patch matches
   for (i = 0; binaries[i].name; i++) {
@@ -1076,6 +1075,5 @@ int main(int argc, char *argv[]) {
 
 cleanup:
   fclose(xwa);
-  free(buffer);
   return res;
 }
