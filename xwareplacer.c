@@ -47,21 +47,15 @@ static const char refstr[23][10] = {
   "Region 1",
 };
 
-#define BLOCK_SIZE 4096
+#define BLOCK_SIZE 2048
 static void copy(FILE *to, FILE *from) {
-  void *buf = malloc(BLOCK_SIZE);
+  char buf[BLOCK_SIZE];
   int got = 0;
-  if (!buf)
-    goto err_out;
   do {
     got = fread(buf, 1, BLOCK_SIZE, from);
-    if (got < 0)
-      goto err_out;
-    if (got)
+    if (got > 0)
       got = fwrite(buf, 1, got, to);
   } while (got == BLOCK_SIZE);
-err_out:
-  free(buf);
 }
 
 static int check_and_replace(const char *replace) {
