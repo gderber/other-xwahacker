@@ -25,6 +25,8 @@
 
 #define DEBUG 0
 
+#define SHORT_ENUM __attribute__((packed))
+
 #define NUM_RES 4
 static const struct {
   int offset;
@@ -159,7 +161,7 @@ enum PATCHES {
   PATCH_NO_MSGLOOP,
   PATCH_ADD_MSGLOOP,
   NUM_PATCHES
-};
+} SHORT_ENUM;
 
 // patch groups help ensure that all patching will be reversible
 static const enum PATCHES xwa_patchgroups[] = {
