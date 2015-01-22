@@ -55,6 +55,9 @@ nofixedclear.bat           Reverts changes from fixedclear.bat
                            graphics drivers.
 16bitmode.bat              Reverts changes from 32bitmode.bat
 
+changefov.bat              Change field of view. Using changeres.bat resets to
+                           defaults.
+
 changefps.bat              Allows changing the maximum FPS limit.
                            Useless since it only affects FPS in the main menu,
                            not for gameplay.

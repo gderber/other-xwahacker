@@ -994,10 +994,12 @@ int main(int argc, char *argv[]) {
       int skip_hud_scale = argc > 6 && argv[6][0] == 'k';
       float deg = argc > 7 ? parse_float(argv[7], 10, 170) : -1;
       int skip_deg = argc > 7 && argv[7][0] == 'k';
-      if (num < 0 || w < 0 || h < 0) {
+      if (num < 0 || w < -1 || h < -1) {
         printf("Incorrect resolution values\n");
         goto cleanup;
       }
+      if (w < 0) w = resolutions[num].w;
+      if (h < 0) h = resolutions[num].h;
       if (resolutions[num].w < 0 || resolutions[num].h < 0 ||
           resolutions[num].fov < 0 || resolutions[num].hud_scale.i == 0xffffffffu) {
         printf("Could not detect current values, aborting\n");
