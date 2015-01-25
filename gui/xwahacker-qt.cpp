@@ -68,7 +68,15 @@ static void addSpinBoxes(QGridLayout *grid, QSpinBox *(&sb)[4][2], QDoubleSpinBo
     }
 }
 
-static const char *opt_names[NUM_OPTS] = {"fixed Z clear", "force 800x600", "32 bit (buggy)", "no CD check", "voice from disk"};
+static const char *opt_names[NUM_OPTS] = {
+    [OPT_FIXED_CLEAR] = "fixed Z clear",
+    [OPT_FORCE_800] = "force 800x600",
+    [OPT_USE_32BIT] = "32 bit (buggy)",
+    [OPT_NOCD] = "no CD check",
+    [OPT_HDVOICE] = "voice from disk",
+    [OPT_NOSTARS] = "starfield off",
+    [OPT_MSGLOOP] = "message loop in hangar (Linux/WINE fix)",
+};
 
 XWAHacker::XWAHacker()
 {
@@ -156,6 +164,8 @@ bool XWAHacker::openBinary(const char *filename)
             [OPT_USE_32BIT] = PATCH_32BIT_FB,
             [OPT_NOCD] = PATCH_NO_CD_CHECK,
             [OPT_HDVOICE] = PATCH_HD_VOICE,
+            [OPT_NOSTARS] = PATCH_STARS_OFF,
+            [OPT_MSGLOOP] = PATCH_ADD_MSGLOOP,
         };
         opts[i]->setChecked(check_patch(buffer, xwa, optsmap[i], 1));
     }
@@ -225,6 +235,8 @@ void XWAHacker::save()
             [OPT_USE_32BIT] = {0, 1},
             [OPT_NOCD] = {-PATCH_CD_CHECK, -PATCH_NO_CD_CHECK},
             [OPT_HDVOICE] = {-PATCH_CD_VOICE, -PATCH_HD_VOICE},
+            [OPT_NOSTARS] = {-PATCH_STARS_ON, -PATCH_STARS_OFF},
+            [OPT_MSGLOOP] = {-PATCH_NO_MSGLOOP, -PATCH_ADD_MSGLOOP},
         };
         int collection = opt2collection[i][c];
         int res = 0;

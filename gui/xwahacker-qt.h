@@ -30,6 +30,8 @@ enum {
     OPT_USE_32BIT,
     OPT_NOCD,
     OPT_HDVOICE,
+    OPT_NOSTARS,
+    OPT_MSGLOOP,
     NUM_OPTS
 };
 
