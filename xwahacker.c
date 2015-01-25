@@ -1,6 +1,6 @@
 /*
  * XWAHacker: collection of binary patches for X-Wing Alliance.
- * Copyright (C) 2009-2012 Reimar Döffinger
+ * Copyright (C) 2009-2015 Reimar Döffinger
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,12 +43,12 @@ static const struct {
 };
 
 static uint32_t RL32(const void *ptr) {
-  const uint8_t *p = ptr;
+  const uint8_t *p = (const uint8_t *)ptr;
   return (p[3] << 24) | (p[2] << 16) | (p[1] << 8) | p[0];
 }
 
 static void WL32(void *ptr, uint32_t v) {
-  uint8_t *p = ptr;
+  uint8_t *p = (uint8_t *)ptr;
   p[3] = v >> 24;
   p[2] = v >> 16;
   p[1] = v >>  8;
@@ -811,44 +811,6 @@ static int set_max_fps(uint8_t *buffer, FILE *f, int fps) {
   return 1;
 }
 
-static const char optionhelp[] =
-  "Options:\n"
-  "  -l             : List available patches\n"
-  "  -m             : List available metapatches\n"
-  "  -m <n>         : Apply metapatch number <n>\n"
-  "  -c             : List available patch collections (XWA only)\n"
-  "  -c <n>         : Apply patch collection <n> (XWA only)\n"
-  "  -p <n>         : Apply patch number <n>\n"
-  "  -r             : List resolution settings (XWA only)\n"
-  "  -r <n> <w> <h> [<s> [<f>]]\n"
-  "                 : Redirect resolution <n> to <w>x<h> (XWA only)\n"
-  "                   optionally specify a HUD scale factor (s)\n"
-  "                   and the vertical field of view (f)\n"
-  "  -f             : Show current max FPS limit (XWA only)\n"
-  "  -f <f>         : Set max FPS limit to <f> (XWA only)\n"
-;
-
-static void print_help(const char *prog) {
-  printf("Usage: %s xwingalliance.exe [option]\n", prog);
-  printf(optionhelp);
-}
-
-static int parse_num(const char *s, int limit) {
-  char *end;
-  long int num = strtol(s, &end, 10);
-  if (*end || num < 0 || num >= limit)
-    return -1;
-  return num;
-}
-
-static float parse_float(const char *s, float min, float max) {
-  char *end;
-  double num = strtod(s, &end);
-  if (*end || num < min || num > max)
-    return -1.0;
-  return num;
-}
-
 struct resopts {
   int w;
   int h;
@@ -900,6 +862,63 @@ static void read_res(uint8_t *buffer, FILE *f, struct resopts res[NUM_RES]) {
         res[i].fov = RL32(buffer + 16);
     }
   }
+}
+
+static int write_res(uint8_t *buffer, FILE *f, const struct resopts *newval, int num,
+                     int skip_hud_scale, int skip_deg) {
+  buffer[0] = 0xb8; buffer[5] = 0xb9;
+  WL32(buffer + 1, newval->w); WL32(buffer + 6, newval->h);
+  if (!write_buffer(buffer, f, resdes[num].offset, 10)) {
+    printf("Error writing new resolutions to file\n");
+    return 0;
+  }
+  WL32(buffer, newval->hud_scale.i);
+  WL32(buffer + 4, newval->fov);
+  if ((!skip_hud_scale && !write_buffer(buffer, f, resdes[num].fov_offset + 6, 4)) ||
+      (!skip_deg && !write_buffer(buffer + 4, f, resdes[num].fov_offset + 16, 4))) {
+    printf("Error fixing up fov/HUD scale\n");
+    return 0;
+  }
+  return 1;
+}
+
+#ifndef GUI
+static const char optionhelp[] =
+  "Options:\n"
+  "  -l             : List available patches\n"
+  "  -m             : List available metapatches\n"
+  "  -m <n>         : Apply metapatch number <n>\n"
+  "  -c             : List available patch collections (XWA only)\n"
+  "  -c <n>         : Apply patch collection <n> (XWA only)\n"
+  "  -p <n>         : Apply patch number <n>\n"
+  "  -r             : List resolution settings (XWA only)\n"
+  "  -r <n> <w> <h> [<s> [<f>]]\n"
+  "                 : Redirect resolution <n> to <w>x<h> (XWA only)\n"
+  "                   optionally specify a HUD scale factor (s)\n"
+  "                   and the vertical field of view (f)\n"
+  "  -f             : Show current max FPS limit (XWA only)\n"
+  "  -f <f>         : Set max FPS limit to <f> (XWA only)\n"
+;
+
+static void print_help(const char *prog) {
+  printf("Usage: %s xwingalliance.exe [option]\n", prog);
+  printf(optionhelp);
+}
+
+static int parse_num(const char *s, int limit) {
+  char *end;
+  long int num = strtol(s, &end, 10);
+  if (*end || num < 0 || num >= limit)
+    return -1;
+  return num;
+}
+
+static float parse_float(const char *s, float min, float max) {
+  char *end;
+  double num = strtod(s, &end);
+  if (*end || num < min || num > max)
+    return -1.0;
+  return num;
 }
 
 int main(int argc, char *argv[]) {
@@ -998,28 +1017,19 @@ int main(int argc, char *argv[]) {
         printf("Incorrect resolution values\n");
         goto cleanup;
       }
-      if (w < 0) w = resolutions[num].w;
-      if (h < 0) h = resolutions[num].h;
       if (resolutions[num].w < 0 || resolutions[num].h < 0 ||
           resolutions[num].fov < 0 || resolutions[num].hud_scale.i == 0xffffffffu) {
         printf("Could not detect current values, aborting\n");
         goto cleanup;
       }
-      buffer[0] = 0xb8; buffer[5] = 0xb9;
-      WL32(buffer + 1, w); WL32(buffer + 6, h);
-      if (!write_buffer(buffer, xwa, resdes[num].offset, 10)) {
-        printf("Error writing new resolutions to file\n");
-        goto cleanup;
-      }
-      printf("Updated resolution %i to map to %5i x %5i\n", num, w, h);
+      if (w > 0) resolutions[num].w = w;
+      if (h > 0) resolutions[num].h = h;
       resolutions[num].hud_scale.f = hud_scale > 0 ? hud_scale : default_hud_scale(h);
-      WL32(buffer, resolutions[num].hud_scale.i);
-      WL32(buffer + 4, deg > 0 ? deg2fov(deg, h) : default_fov(h));
-      if ((!skip_hud_scale && !write_buffer(buffer, xwa, resdes[num].fov_offset + 6, 4)) ||
-          (!skip_deg && !write_buffer(buffer + 4, xwa, resdes[num].fov_offset + 16, 4))) {
-        printf("Error fixing up fov/HUD scale\n");
+      resolutions[num].fov = deg > 0 ? deg2fov(deg, h) : default_fov(h);
+
+      if (!write_res(buffer, xwa, resolutions + num, num, skip_hud_scale, skip_deg))
         goto cleanup;
-      }
+      printf("Updated resolution %i to map to %5i x %5i\n", num, w, h);
       res = 0;
       goto cleanup;
     } else if (argc == 4 && strcmp(opt, "-p") == 0) {
@@ -1079,3 +1089,4 @@ cleanup:
   fclose(xwa);
   return res;
 }
+#endif
