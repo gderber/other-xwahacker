@@ -17,6 +17,7 @@
  */
 
 #include <QApplication>
+#include <QFileDialog>
 
 #include "xwahacker-qt.h"
 
@@ -24,12 +25,22 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
-    const char *filename = "xwingalliance.exe";
-    if (argc > 1) filename = argv[1];
+    char *filename = NULL;
+    if (argc > 1) filename = strdup(argv[1]);
+    else
+    {
+        QString name = QFileDialog::getOpenFileName(0, QObject::tr("Select xwingalliance.exe to edit"), QString(), "xwingalliance.exe;;*.exe;;*.*");
+        if (name.isNull())
+            return 1;
+        QByteArray tmp = name.toLocal8Bit();
+        filename = strdup(tmp.data());
+    }
 
     XWAHacker window;
     if (!window.openBinary(filename))
         return 1;
+    free(filename);
+    filename = NULL;
     window.show();
 
     return app.exec();
