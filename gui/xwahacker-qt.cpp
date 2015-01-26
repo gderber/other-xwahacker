@@ -132,7 +132,11 @@ bool XWAHacker::openBinary(const char *filename)
     if (!xwa)
     {
         QMessageBox err;
+#ifdef __WIN32__
+        err.setText(tr("Could not open file.\nTry running this program as administrator."));
+#else
         err.setText(tr("Could not open file"));
+#endif
         err.exec();
         return false;
     }
