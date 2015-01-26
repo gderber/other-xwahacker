@@ -224,7 +224,7 @@ void XWAHacker::save()
             resolutions[i].hud_scale.f = hud;
         if (!write_res(buffer, xwa, resolutions + i, i, 0, 0))
         {
-            QMessageBox err;
+            QMessageBox err(this);
             err.setText(tr("Failed writing resolution values"));
             err.exec();
             return;
@@ -254,12 +254,15 @@ void XWAHacker::save()
         }
         if (!res)
         {
-            QMessageBox err;
+            QMessageBox err(this);
             err.setText(tr("Failed setting option") + tr(opt_names[i]));
             err.exec();
             return;
         }
     }
+    QMessageBox done(this);
+    done.setText(tr("Changes saved successfully!"));
+    done.exec();
 
     qApp->quit();
 }
