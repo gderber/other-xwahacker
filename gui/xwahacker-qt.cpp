@@ -69,13 +69,12 @@ static void addSpinBoxes(QGridLayout *grid, QSpinBox *(&sb)[4][2], QDoubleSpinBo
 }
 
 static const char *opt_names[NUM_OPTS] = {
-    [OPT_FIXED_CLEAR] = "fixed Z clear",
-    [OPT_FORCE_800] = "force 800x600",
-    [OPT_USE_32BIT] = "32 bit (buggy)",
-    [OPT_NOCD] = "no CD check",
-    [OPT_HDVOICE] = "voice from disk",
-    [OPT_NOSTARS] = "starfield off",
-    [OPT_MSGLOOP] = "message loop in hangar (Linux/WINE fix)",
+    [OPT_FIXED_CLEAR] = "Fix graphical corruption like disappearing objects",
+    [OPT_FORCE_800] = "Use resolution marked 800x600 above regardless of in-game settings",
+    [OPT_USE_32BIT] = "32 bit rendering, breaks load screens",
+    [OPT_NOCD] = "Disable CD checks, play from install path",
+    [OPT_NOSTARS] = "Disable starfield background (better performance on Linux)",
+    [OPT_MSGLOOP] = "Fix keyboard not working in hangar (Linux/WINE fix)",
 };
 
 XWAHacker::XWAHacker()
@@ -95,7 +94,7 @@ XWAHacker::XWAHacker()
         opt_layout->addWidget(opts[i]);
     }
 
-    QGroupBox *opt_group = new QGroupBox(tr("Options"));
+    QGroupBox *opt_group = new QGroupBox(tr("Options - all disabled in original game"));
     opt_group->setLayout(opt_layout);
 
     QHBoxLayout *button_layout = new QHBoxLayout();
@@ -167,7 +166,6 @@ bool XWAHacker::openBinary(const char *filename)
             [OPT_FORCE_800] = PATCH_FORCE_RES,
             [OPT_USE_32BIT] = PATCH_32BIT_FB,
             [OPT_NOCD] = PATCH_NO_CD_CHECK,
-            [OPT_HDVOICE] = PATCH_HD_VOICE,
             [OPT_NOSTARS] = PATCH_STARS_OFF,
             [OPT_MSGLOOP] = PATCH_ADD_MSGLOOP,
         };
@@ -237,8 +235,7 @@ void XWAHacker::save()
             [OPT_FIXED_CLEAR] = {2, 3},
             [OPT_FORCE_800] = {4, 5},
             [OPT_USE_32BIT] = {0, 1},
-            [OPT_NOCD] = {-PATCH_CD_CHECK, -PATCH_NO_CD_CHECK},
-            [OPT_HDVOICE] = {-PATCH_CD_VOICE, -PATCH_HD_VOICE},
+            [OPT_NOCD] = {6, 7},
             [OPT_NOSTARS] = {-PATCH_STARS_ON, -PATCH_STARS_OFF},
             [OPT_MSGLOOP] = {-PATCH_NO_MSGLOOP, -PATCH_ADD_MSGLOOP},
         };
