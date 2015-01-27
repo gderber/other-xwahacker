@@ -615,9 +615,9 @@ static const struct collection xwa_collections[] = {
   {"force 800x600 resolution",
     {PATCH_FORCE_RES, PATCH_FORCE_RES_2, NO_PATCH}},
   {"use CD",
-    {PATCH_CD_CHECK, PATCH_CD_VOICE, PATCH_NO_HIDE_CD_DRIVES}},
+    {PATCH_CD_CHECK, PATCH_CD_VOICE, PATCH_NO_HIDE_CD_DRIVES, NO_PATCH}},
   {"play from installation directory",
-    {PATCH_NO_CD_CHECK, PATCH_HD_VOICE, PATCH_HIDE_CD_DRIVES}},
+    {PATCH_NO_CD_CHECK, PATCH_HD_VOICE, PATCH_HIDE_CD_DRIVES, NO_PATCH}},
   {NULL}
 };
 
