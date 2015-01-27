@@ -13,6 +13,8 @@ Version 2.3 adds a patch to make the game work in Wine on Linux.
 
 Version 2.4 adds changefov.bat
 
+Version 2.5 improves the no-CD patch and has a GUI version.
+
 To patch X-Wing Alliance, extract the .bat and xwahacker.exe files
 somewhere and then copy xwingalliance.exe from the X-Wing Alliance
 installation directory there.
