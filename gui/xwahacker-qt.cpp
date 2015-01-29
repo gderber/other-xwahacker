@@ -142,17 +142,32 @@ bool XWAHacker::openBinary(const char *filename)
 
     uint8_t buffer[BUFFER_SZ];
     int count = count_patches(buffer, xwa, binaries[0].patchgroups);
+    bool enable_opts = true;
     if (count != num_patchgroups(binaries[0].patchgroups))
     {
         QMessageBox err;
-        err.setText(tr(count ? "File has unsupported modifications" : "Not a supported XWingAlliance binary"));
+        err.setText(tr(count ? "File has unsupported modifications\nOptions disabled" : "Not a supported XWingAlliance binary"));
         err.exec();
-        return false;
+        if (!count)
+            return false;
+        enable_opts = false;
+    }
+    for (int i = 0; i < NUM_OPTS; ++i)
+    {
+        opts[i]->setEnabled(enable_opts);
     }
     struct resopts resolutions[NUM_RES];
     read_res(buffer, xwa, resolutions);
     for (int i = 0; i < 4; ++i)
     {
+        if (resolutions[i].w < 0 || resolutions[i].h < 0 ||
+            resolutions[i].fov < 0 || resolutions[i].hud_scale.i == 0xffffffffu)
+        {
+            QMessageBox err;
+            err.setText(tr("Unsupported binary, could not read resolution settings"));
+            err.exec();
+            return false;
+        }
         res_spinboxes[i][0]->setValue(resolutions[i].w);
         res_spinboxes[i][1]->setValue(resolutions[i].h);
         fov_hud_spinboxes[i][0]->setValue(fov2deg(resolutions[i].fov, resolutions[i].h));
@@ -230,6 +245,8 @@ void XWAHacker::save()
     }
     for (int i = 0; i < NUM_OPTS; ++i)
     {
+        if (!opts[i]->isEnabled())
+            continue;
         bool c = opts[i]->isChecked();
         int opt2collection[NUM_OPTS][2] = {
             [OPT_FIXED_CLEAR] = {2, 3},
