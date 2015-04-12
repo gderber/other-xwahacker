@@ -1,5 +1,5 @@
 CC=gcc
-DIET=diet gcc -m32
+DIET=diet -Os gcc -m32
 CROSS_CC=i686-w64-mingw32-gcc
 CFLAGS=-Wall -Wdeclaration-after-statement -Wpointer-arith -Wredundant-decls -Wcast-qual -Wwrite-strings -g -Os
 # is supposedly the default, but obviously not on MinGW-w64
@@ -16,7 +16,7 @@ all: xwahacker.unsigned.exe xwareplacer.unsigned.exe xwahacker.static xwareplace
 	$(CC) $(CFLAGS) $^ $(LDFLAGS) -o $@
 
 %.static: %.c
-	$(DIET) $(CFLAGS) $^ $(LDFLAGS) -s -o $@
+	$(DIET) -DNDEBUG $(CFLAGS) $^ $(LDFLAGS) -s -o $@
 
 # Simpler, safer but larger code build command:
 #$(CROSS_CC) -static $(CFLAGS) -Wl,--nxcompat -Wl,--no-seh -Wl,--dynamicbase $^ $(LDFLAGS) -o $@
