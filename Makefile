@@ -45,6 +45,6 @@ gui_upload: xwahacker-gui-${GUI_VERSION}-win.zip
 	scp $^ $(SFUSER),xwahacker@frs.sourceforge.net:/home/frs/project/x/xw/xwahacker
 
 clean:
-	rm -rf xwahacker xwahacker.exe xwahacker.unsigned.exe xwahacker.static xwahacker*.zip xwareplacer xwareplacer.unsigned.exe xwareplacer.exe xwareplacer.static
+	rm -rf xwahacker xwahacker.exe xwahacker.unsigned.exe xwahacker.static xwahacker*.zip xwareplacer xwareplacer.unsigned.exe xwareplacer.exe xwareplacer.static xwahacker-qt.unsigned.exe xwahacker-qt.exe
 
 .PHONY: all clean release upload
