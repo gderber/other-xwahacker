@@ -30,6 +30,9 @@ xwahacker-qt.unsigned.exe: gui/release/xwahacker-qt.exe
 	strip $^
 	if [ -n "$(SIGNKEY)" ] ; then osslsigncode sign -ts http://www.startssl.com/timestamp -certs $(SIGNKEY).crt -key $(SIGNKEY).key -in $^ -out $@ ; chmod +x $@ ; else cp $^ $@ ; fi
 
+%.asc: %
+	gpg -a -b $^
+
 release: xwahacker-${VERSION}.zip xwahacker-gui-${GUI_VERSION}-win.zip
 
 xwahacker-gui-${GUI_VERSION}-win.zip: xwahacker-qt.exe LICENSE
@@ -38,7 +41,7 @@ xwahacker-gui-${GUI_VERSION}-win.zip: xwahacker-qt.exe LICENSE
 xwahacker-${VERSION}.zip: *.bat xwahacker.exe xwareplacer.exe xwahacker.static xwareplacer.static readme.txt readme-linux.txt readme-xwareplacer.txt LICENSE xwahacker.c xwareplacer.c
 	7z a -mx=9 $@ $^
 
-upload: xwahacker-${VERSION}.zip readme.txt
+upload: xwahacker-${VERSION}.zip xwahacker-${VERSION}.zip.asc readme.txt
 	scp $^ $(SFUSER),xwahacker@frs.sourceforge.net:/home/frs/project/x/xw/xwahacker
 
 gui_upload: xwahacker-gui-${GUI_VERSION}-win.zip
