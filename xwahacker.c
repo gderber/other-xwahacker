@@ -164,6 +164,11 @@ enum PATCHES {
   PATCH_NO_HIDE_CD_DRIVES,
   PATCH_HIDE_CD_DRIVES,
 
+  PATCH_BOP_GOG_DISABLE_3D,
+  PATCH_BOP_GOG_ENABLE_3D,
+  PATCH_XVT_GOG_DISABLE_3D,
+  PATCH_XVT_GOG_ENABLE_3D,
+
   NUM_PATCHES
 } SHORT_ENUM;
 
@@ -223,6 +228,20 @@ static const enum PATCHES bop_patchgroups[] = {
 static const enum PATCHES bop_en_patchgroups[] = {
   PATCH_BOP_EN_BLT_CLEAR, PATCH_BOP_EN_CLEAR2, NO_PATCH,
   PATCH_BOP_EN_RANDCD, PATCH_BOP_EN_XVTCD, NO_PATCH,
+  NO_PATCH
+};
+
+static const enum PATCHES bop_gog_patchgroups[] = {
+  PATCH_BOP_GOG_DISABLE_3D, PATCH_BOP_GOG_ENABLE_3D, NO_PATCH,
+  PATCH_BOP_EN_BLT_CLEAR, PATCH_BOP_EN_CLEAR2, NO_PATCH,
+  PATCH_BOP_EN_RANDCD, PATCH_BOP_EN_XVTCD, NO_PATCH,
+  NO_PATCH
+};
+
+static const enum PATCHES xvt_gog_patchgroups[] = {
+  PATCH_XVT_GOG_DISABLE_3D, PATCH_XVT_GOG_ENABLE_3D, NO_PATCH,
+  PATCH_XVTBOP_BLT_CLEAR, PATCH_XVTBOP_BROKEN, PATCH_XVTBOP_CLEAR2, NO_PATCH,
+  PATCH_XVTBOP_JS_CHECK, PATCH_XVTBOP_NO_JS_CHECK, NO_PATCH,
   NO_PATCH
 };
 
@@ -308,6 +327,11 @@ static const char * const patchnames[NUM_PATCHES] = {
 
   [PATCH_NO_HIDE_CD_DRIVES]  = "Scan for CD drives",
   [PATCH_HIDE_CD_DRIVES]     = "Disable scanning for CD drives to avoid error messages",
+
+  [PATCH_BOP_GOG_DISABLE_3D] = "Hardware 3D mode disabled",
+  [PATCH_BOP_GOG_ENABLE_3D]  = "Hardware 3D mode enabled",
+  [PATCH_XVT_GOG_DISABLE_3D] = "Hardware 3D mode disabled",
+  [PATCH_XVT_GOG_ENABLE_3D]  = "Hardware 3D mode enabled",
 };
 
 static const struct patchdesc {
@@ -588,6 +612,23 @@ static const struct patchdesc {
       (const uint8_t [ 8]){0x83, 0xf8, 0x05, 0x75, 0x70, 0x83, 0xc9, 0xff}},
   [PATCH_HIDE_CD_DRIVES]     = {0x12a55b, 8, 0,
       (const uint8_t [ 8]){0x83, 0xf8, 0x05, 0xeb, 0x70, 0x83, 0xc9, 0xff}},
+
+  [PATCH_BOP_GOG_DISABLE_3D] = {0xd36b7, 20, 1,
+      (const uint8_t [20]){0xe8, 0x64, 0x19, 0x00, 0x00, 0x6a, 0x00, 0x68,
+                           0x2e, 0x7b, 0xaa, 0x00, 0x6a, 0x02, 0x90, 0xe8,
+                           0xe5, 0x2b, 0x04, 0x00}},
+  [PATCH_BOP_GOG_ENABLE_3D] = {0xd36b7, 20, 0,
+      (const uint8_t [20]){0xe8, 0x64, 0x19, 0x00, 0x00, 0x8b, 0xf0, 0x6a,
+                           0x00, 0x68, 0x2e, 0x7b, 0xaa, 0x00, 0x56, 0xe8,
+                           0xe5, 0x2b, 0x04, 0x00}},
+  [PATCH_XVT_GOG_DISABLE_3D] = {0xd3ae2, 20, 1,
+      (const uint8_t [20]){0xe8, 0xf9, 0x19, 0x00, 0x00, 0x6a, 0x00, 0x68,
+                           0x63, 0x96, 0x75, 0x00, 0x6a, 0x02, 0x90, 0xe8,
+                           0x5e, 0x57, 0x04, 0x00}},
+  [PATCH_XVT_GOG_ENABLE_3D] = {0xd3ae2, 20, 0,
+      (const uint8_t [20]){0xe8, 0xf9, 0x19, 0x00, 0x00, 0x8b, 0xf0, 0x6a,
+                           0x00, 0x68, 0x63, 0x96, 0x75, 0x00, 0x56, 0xe8,
+                           0x5e, 0x57, 0x04, 0x00}},
 };
 
 struct collection {
@@ -633,6 +674,8 @@ static const struct binary {
   {"X-Wing vs. TIE Fighter", "Z_XVT__.EXE", xvtbop_patchgroups, NULL},
   {"Balance of Power (DE)", "z_xvt__.EXE", bop_patchgroups, NULL},
   {"Balance of Power (EN)", "z_xvt__.EXE", bop_en_patchgroups, NULL},
+  {"X-Wing vs. TIE Fighter (GOG)", "Z_XVT__.EXE", xvt_gog_patchgroups, NULL},
+  {"Balance of Power (GOG)", "z_xvt__.EXE", bop_gog_patchgroups, NULL},
   {NULL}
 };
 
@@ -649,6 +692,12 @@ static const struct metapatch {
     {PATCH_CLEAR2, PATCH_TIE95_CLEAR2, PATCH_XWING95_CLEAR2,
      PATCH_XVTBOP_CLEAR2, PATCH_BOP_CLEAR2, PATCH_BOP_EN_CLEAR2,
      NO_PATCH}
+  },
+  {"Hardware 3D disabled",
+    {PATCH_BOP_GOG_DISABLE_3D, PATCH_XVT_GOG_DISABLE_3D, NO_PATCH}
+  },
+  {"Hardware 3D enabled",
+    {PATCH_BOP_GOG_ENABLE_3D, PATCH_XVT_GOG_ENABLE_3D, NO_PATCH}
   },
   {NULL}
 };
