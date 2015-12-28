@@ -291,7 +291,6 @@ static const char * const patchnames[NUM_PATCHES] = {
   [PATCH_STAR_32_13]  = "32 bit starfield part 13 (anti-blink hack)",
   [PATCH_CD_CHECK]    = "check if CD is in drive",
   [PATCH_NO_CD_CHECK] = "skip check if CD is in drive",
-  [PATCH_NO_CD_CHECK2] = "skip check if CD is in drive (variant)",
   [PATCH_CD_VOICE]    = "play briefing voice only from CD",
   [PATCH_HD_VOICE]    = "play briefing voice from a HD copy",
   [PATCH_SELECT_RES]  = "allow selecting resolution (part 1)",
@@ -335,6 +334,8 @@ static const char * const patchnames[NUM_PATCHES] = {
   [PATCH_BOP_GOG_ENABLE_3D]  = "Hardware 3D mode enabled",
   [PATCH_XVT_GOG_DISABLE_3D] = "Hardware 3D mode disabled",
   [PATCH_XVT_GOG_ENABLE_3D]  = "Hardware 3D mode enabled",
+
+  [PATCH_NO_CD_CHECK2] = "skip check if CD is in drive (variant)",
 };
 
 static const struct patchdesc {
@@ -503,9 +504,6 @@ static const struct patchdesc {
   [PATCH_NO_CD_CHECK] = {0x12a3e0, 16, 0,
       (const uint8_t [16]){0xa0, 0x37, 0xc7, 0xab, 0x00, 0x83, 0xec, 0x50,
                            0x84, 0xc0, 0x56, 0x57, 0x33, 0xc0, 0x40, 0x90}},
-  [PATCH_NO_CD_CHECK2] = {0x12a3e0, 16, 0,
-      (const uint8_t [16]){0xb8, 0x01, 0x00, 0x00, 0x00, 0xc3, 0xec, 0x50,
-                           0x84, 0xc0, 0x56, 0x57, 0x33, 0xc0, 0x40, 0x90}},
   [PATCH_CD_VOICE]    = {0x15772e, 4, 1,
       (const uint8_t [ 4]){0x75, 0x32, 0xe8, 0xdb}},
   [PATCH_HD_VOICE]    = {0x15772e, 4, 0,
@@ -635,6 +633,10 @@ static const struct patchdesc {
       (const uint8_t [20]){0xe8, 0xf9, 0x19, 0x00, 0x00, 0x8b, 0xf0, 0x6a,
                            0x00, 0x68, 0x63, 0x96, 0x75, 0x00, 0x56, 0xe8,
                            0x5e, 0x57, 0x04, 0x00}},
+
+  [PATCH_NO_CD_CHECK2] = {0x12a3e0, 16, 0,
+      (const uint8_t [16]){0xb8, 0x01, 0x00, 0x00, 0x00, 0xc3, 0xec, 0x50,
+                           0x84, 0xc0, 0x56, 0x57, 0x33, 0xc0, 0x40, 0x90}},
 };
 
 struct collection {
