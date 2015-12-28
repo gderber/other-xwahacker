@@ -169,6 +169,8 @@ enum PATCHES {
   PATCH_XVT_GOG_DISABLE_3D,
   PATCH_XVT_GOG_ENABLE_3D,
 
+  PATCH_NO_CD_CHECK2,
+
   NUM_PATCHES
 } SHORT_ENUM;
 
@@ -192,7 +194,7 @@ static const enum PATCHES xwa_patchgroups[] = {
   PATCH_STAR_16_11, PATCH_STAR_32_11, NO_PATCH,
   PATCH_STAR_16_12, PATCH_STAR_32_12, NO_PATCH,
   PATCH_STAR_16_13, PATCH_STAR_32_13, NO_PATCH,
-  PATCH_CD_CHECK, PATCH_NO_CD_CHECK, NO_PATCH,
+  PATCH_CD_CHECK, PATCH_NO_CD_CHECK, PATCH_NO_CD_CHECK2, NO_PATCH,
   PATCH_CD_VOICE, PATCH_HD_VOICE, NO_PATCH,
   PATCH_SELECT_RES, PATCH_FORCE_RES, NO_PATCH,
   PATCH_SELECT_RES_2, PATCH_FORCE_RES_2, NO_PATCH,
@@ -289,6 +291,7 @@ static const char * const patchnames[NUM_PATCHES] = {
   [PATCH_STAR_32_13]  = "32 bit starfield part 13 (anti-blink hack)",
   [PATCH_CD_CHECK]    = "check if CD is in drive",
   [PATCH_NO_CD_CHECK] = "skip check if CD is in drive",
+  [PATCH_NO_CD_CHECK2] = "skip check if CD is in drive (variant)",
   [PATCH_CD_VOICE]    = "play briefing voice only from CD",
   [PATCH_HD_VOICE]    = "play briefing voice from a HD copy",
   [PATCH_SELECT_RES]  = "allow selecting resolution (part 1)",
@@ -494,12 +497,15 @@ static const struct patchdesc {
       (const uint8_t [ 4]){0x2b, 0xc2, 0x8b, 0x15}},
   [PATCH_STAR_32_13]  = {0x0dd653,  4, 0,
       (const uint8_t [ 4]){0x90, 0x90, 0x8b, 0x15}},
-  [PATCH_CD_CHECK]    = {0x12a3e5, 11, 1,
-      (const uint8_t [11]){0x83, 0xec, 0x50, 0x84, 0xc0, 0x56, 0x57, 0x75,
-                           0x08, 0x33, 0xc0}},
-  [PATCH_NO_CD_CHECK] = {0x12a3e5, 11, 0,
-      (const uint8_t [11]){0x83, 0xec, 0x50, 0x84, 0xc0, 0x56, 0x57, 0x33,
-                           0xc0, 0x40, 0x90}},
+  [PATCH_CD_CHECK]    = {0x12a3e0, 16, 1,
+      (const uint8_t [16]){0xa0, 0x37, 0xc7, 0xab, 0x00, 0x83, 0xec, 0x50,
+                           0x84, 0xc0, 0x56, 0x57, 0x75, 0x08, 0x33, 0xc0}},
+  [PATCH_NO_CD_CHECK] = {0x12a3e0, 16, 0,
+      (const uint8_t [16]){0xa0, 0x37, 0xc7, 0xab, 0x00, 0x83, 0xec, 0x50,
+                           0x84, 0xc0, 0x56, 0x57, 0x33, 0xc0, 0x40, 0x90}},
+  [PATCH_NO_CD_CHECK2] = {0x12a3e0, 16, 0,
+      (const uint8_t [16]){0xb8, 0x01, 0x00, 0x00, 0x00, 0xc3, 0xec, 0x50,
+                           0x84, 0xc0, 0x56, 0x57, 0x33, 0xc0, 0x40, 0x90}},
   [PATCH_CD_VOICE]    = {0x15772e, 4, 1,
       (const uint8_t [ 4]){0x75, 0x32, 0xe8, 0xdb}},
   [PATCH_HD_VOICE]    = {0x15772e, 4, 0,
