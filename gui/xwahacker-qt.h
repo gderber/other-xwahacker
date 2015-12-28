@@ -22,6 +22,7 @@
 #include <QCheckBox>
 #include <QDoubleSpinBox>
 #include <QMainWindow>
+#include <QPushButton>
 #include <QSpinBox>
 
 enum {
@@ -48,12 +49,19 @@ private slots:
     void res1_change();
     void res2_change();
     void res3_change();
+    void res0_reset();
+    void res1_reset();
+    void res2_reset();
+    void res3_reset();
+    void reset_update();
     void save();
 
 private:
     void res_change(int i);
+    void res_reset(int i);
     QSpinBox *res_spinboxes[4][2];
     QDoubleSpinBox *fov_hud_spinboxes[4][2];
+    QPushButton *res_reset_buttons[4];
     QCheckBox *opts[NUM_OPTS];
     FILE *xwa;
 };

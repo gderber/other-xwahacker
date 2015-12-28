@@ -83,6 +83,11 @@ XWAHacker::XWAHacker()
     addResHeading(res_layout);
     addResNames(res_layout);
     addSpinBoxes(res_layout, res_spinboxes, fov_hud_spinboxes);
+    for (int i = 0; i < 4; ++i)
+    {
+        res_reset_buttons[i] = new QPushButton(tr("Reset"));
+        res_layout->addWidget(res_reset_buttons[i], i + 1, 5);
+    }
 
     QGroupBox *res_group = new QGroupBox(tr("Resolutions"));
     res_group->setLayout(res_layout);
@@ -120,6 +125,16 @@ XWAHacker::XWAHacker()
     connect(res_spinboxes[2][1], SIGNAL(valueChanged(int)), this, SLOT(res2_change()));
     connect(res_spinboxes[3][0], SIGNAL(valueChanged(int)), this, SLOT(res3_change()));
     connect(res_spinboxes[3][1], SIGNAL(valueChanged(int)), this, SLOT(res3_change()));
+    for (int i = 0; i < 4; ++i)
+    {
+        connect(fov_hud_spinboxes[i][0], SIGNAL(valueChanged(double)), this, SLOT(reset_update()));
+        connect(fov_hud_spinboxes[i][1], SIGNAL(valueChanged(double)), this, SLOT(reset_update()));
+    }
+
+    connect(res_reset_buttons[0], SIGNAL(clicked()), this, SLOT(res0_reset()));
+    connect(res_reset_buttons[1], SIGNAL(clicked()), this, SLOT(res1_reset()));
+    connect(res_reset_buttons[2], SIGNAL(clicked()), this, SLOT(res2_reset()));
+    connect(res_reset_buttons[3], SIGNAL(clicked()), this, SLOT(res3_reset()));
 
     connect(exit, SIGNAL(clicked()), qApp, SLOT(quit()));
     connect(save, SIGNAL(clicked()), this, SLOT(save()));
@@ -186,6 +201,7 @@ bool XWAHacker::openBinary(const char *filename)
         };
         opts[i]->setChecked(check_patch(buffer, xwa, optsmap[i], 1));
     }
+    reset_update();
     return true;
 }
 
@@ -194,6 +210,20 @@ void XWAHacker::res_change(int i)
     int h = res_spinboxes[i][1]->value();
     fov_hud_spinboxes[i][0]->setValue(fov2deg(default_fov(h), h));
     fov_hud_spinboxes[i][1]->setValue(default_hud_scale(h));
+    reset_update();
+}
+
+void XWAHacker::reset_update()
+{
+    for (int i = 0; i < 4; ++i)
+    {
+        int h = res_spinboxes[i][1]->value();
+        bool enable = res_spinboxes[i][0]->value() != resdes[i].width ||
+                      h != resdes[i].height ||
+                      deg2fov(fov_hud_spinboxes[i][0]->value(), h) != default_fov(h) ||
+                      static_cast<float>(fov_hud_spinboxes[i][1]->value()) != default_hud_scale(h);
+        res_reset_buttons[i]->setEnabled(enable);
+    }
 }
 
 void XWAHacker::res0_change()
@@ -211,6 +241,30 @@ void XWAHacker::res2_change()
 void XWAHacker::res3_change()
 {
     res_change(3);
+}
+
+void XWAHacker::res_reset(int i)
+{
+    res_spinboxes[i][0]->setValue(resdes[i].width);
+    res_spinboxes[i][1]->setValue(resdes[i].height);
+    res_change(i);
+}
+
+void XWAHacker::res0_reset()
+{
+    res_reset(0);
+}
+void XWAHacker::res1_reset()
+{
+    res_reset(1);
+}
+void XWAHacker::res2_reset()
+{
+    res_reset(2);
+}
+void XWAHacker::res3_reset()
+{
+    res_reset(3);
 }
 
 void XWAHacker::save()
