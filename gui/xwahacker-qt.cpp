@@ -201,6 +201,11 @@ bool XWAHacker::openBinary(const char *filename)
         };
         opts[i]->setChecked(check_patch(buffer, xwa, optsmap[i], 1));
     }
+    if (check_patch(buffer, xwa, PATCH_NO_CD_CHECK2, 1))
+    {
+        opts[OPT_NOCD]->setChecked(true);
+    }
+
     reset_update();
     return true;
 }
