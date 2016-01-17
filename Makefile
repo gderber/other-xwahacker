@@ -7,8 +7,8 @@ CFLAGS+=-Qn
 CFLAGS+=-fomit-frame-pointer
 CFLAGS+=-std=c99 -D_XOPEN_SOURCE=500
 LDFLAGS=-lm
-VERSION=2.6
-GUI_VERSION=0.26
+VERSION=2.7
+GUI_VERSION=0.27
 
 all: xwahacker.unsigned.exe xwareplacer.unsigned.exe xwahacker.static xwareplacer.static
 

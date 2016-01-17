@@ -17,6 +17,9 @@ Version 2.5 improves the no-CD patch and has a GUI version.
 
 Version 2.6 has minor fixes and allows re-enabling hardware 3D in GOG XvT.
 
+Version 2.7 uses a single .bat file to modify all game versions.
+Also supports re-enabling hardware 3D in X-Wing 95 and TIE 95.
+
 To patch X-Wing Alliance, extract the .bat and xwahacker.exe files
 somewhere and then copy xwingalliance.exe from the X-Wing Alliance
 installation directory there.
@@ -50,7 +53,7 @@ To avoid breaking the file beyond repair, xwahacker aborted.
 
 
 For X-Wing Alliance:
-fixedclear.bat             Fixes disappearing objects in X-Wing Alliance
+fixedclear.bat             Fixes disappearing objects in X-Wing Alliance.
 nofixedclear.bat           Reverts changes from fixedclear.bat
 
 32bitmode.bat              Changes rendering to use 32 bit mode.
@@ -81,17 +84,23 @@ noforce800mode.bat         Reverts changes from force800mode.bat
 
 
 For TIE Fighter 95 (for Windows):
-tie95fixedclear.bat        Fixes disappearing objects in TIE Fighter for Windows
-tie95nofixedclear.bat      Reverts changes from tie95fixedclear.bat
+fixedclear.bat             Fixes disappearing objects in TIE Fighter for Windows
+nofixedclear.bat           Reverts changes from fixedclear.bat
+enable3d.bat               Re-enables hardware 3D in GoG releases.
+disable3d.bat              Reverts changes from enable3d.bat
 
 
 For X-Wing 95 (for Windows):
-xwing95fixedclear.bat      Fixes disappearing objects in X-Wing for Windows
-xwing95nofixedclear.bat    Reverts changes from xwing95fixedclear.bat
+fixedclear.bat             Fixes disappearing objects in X-Wing for Windows
+nofixedclear.bat           Reverts changes from fixedclear.bat
+enable3d.bat               Re-enables hardware 3D in GoG releases.
+disable3d.bat              Reverts changes from enable3d.bat
 
 For X-Wing versus TIE Fighter, Balance of Power:
 Tested against German version after installing BoP.
 Patch z_xvt__.exe in XwingTie for XvT, patch the one in
 XwingTie\BalanceOfPower for BoP.
-xvtfixedclear.bat          Fixes disappearing objects
-xvtnofixedclear.bat        Reverts changes from xvtfixedclear.bat
+fixedclear.bat             Fixes disappearing objects
+nofixedclear.bat           Reverts changes from fixedclear.bat
+enable3d.bat               Re-enables hardware 3D in GoG releases.
+disable3d.bat              Reverts changes from enable3d.bat
