@@ -28,7 +28,7 @@ xwahacker-qt.unsigned.exe: gui/release/xwahacker-qt.exe
 
 %.exe: %.unsigned.exe
 	strip $^
-	if [ -n "$(SIGNKEY)" ] ; then osslsigncode sign -ts http://www.startssl.com/timestamp -certs $(SIGNKEY).crt -key $(SIGNKEY).key -in $^ -out $@ ; chmod +x $@ ; else cp $^ $@ ; fi
+	if [ -n "$(SIGNKEY)" ] ; then osslsigncode sign -ts http://timestamp.globalsign.com/scripts/timestamp.dll -certs $(SIGNKEY).crt -key $(SIGNKEY).key -in $^ -out $@ ; chmod +x $@ ; else cp $^ $@ ; fi
 
 %.asc: %
 	gpg -a -b $^
