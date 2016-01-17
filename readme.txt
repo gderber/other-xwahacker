@@ -88,6 +88,8 @@ fixedclear.bat             Fixes disappearing objects in TIE Fighter for Windows
 nofixedclear.bat           Reverts changes from fixedclear.bat
 enable3d.bat               Re-enables hardware 3D in GoG releases.
 disable3d.bat              Reverts changes from enable3d.bat
+swcursor.bat               Force use of software cursor (equivalent to /softwarecursor command-line option)
+hwcursor.bat               Reverts changes from swcursor.bat
 
 
 For X-Wing 95 (for Windows):
@@ -95,6 +97,8 @@ fixedclear.bat             Fixes disappearing objects in X-Wing for Windows
 nofixedclear.bat           Reverts changes from fixedclear.bat
 enable3d.bat               Re-enables hardware 3D in GoG releases.
 disable3d.bat              Reverts changes from enable3d.bat
+swcursor.bat               Force use of software cursor (equivalent to /softwarecursor command-line option)
+hwcursor.bat               Reverts changes from swcursor.bat
 
 For X-Wing versus TIE Fighter, Balance of Power:
 Tested against German version after installing BoP.

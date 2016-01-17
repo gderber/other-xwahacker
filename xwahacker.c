@@ -176,6 +176,11 @@ enum PATCHES {
   PATCH_TIE95_ENABLE_3D,
   PATCH_TIE95_DISABLE_3D,
 
+  PATCH_XWING95_DEFAULT_HWCURSOR,
+  PATCH_XWING95_FORCE_SWCURSOR,
+  PATCH_TIE95_DEFAULT_HWCURSOR,
+  PATCH_TIE95_FORCE_SWCURSOR,
+
   NUM_PATCHES
 } SHORT_ENUM;
 
@@ -213,12 +218,14 @@ static const enum PATCHES xwa_patchgroups[] = {
 static const enum PATCHES tie95_patchgroups[] = {
   PATCH_TIE95_BLT_CLEAR, PATCH_TIE95_CLEAR2, NO_PATCH,
   PATCH_TIE95_ENABLE_3D, PATCH_TIE95_DISABLE_3D, NO_PATCH,
+  PATCH_TIE95_DEFAULT_HWCURSOR, PATCH_TIE95_FORCE_SWCURSOR, NO_PATCH,
   NO_PATCH
 };
 
 static const enum PATCHES xwing95_patchgroups[] = {
   PATCH_XWING95_BLT_CLEAR, PATCH_XWING95_CLEAR2, NO_PATCH,
   PATCH_XWING95_ENABLE_3D, PATCH_XWING95_DISABLE_3D, NO_PATCH,
+  PATCH_XWING95_DEFAULT_HWCURSOR, PATCH_XWING95_FORCE_SWCURSOR, NO_PATCH,
   NO_PATCH
 };
 
@@ -348,6 +355,10 @@ static const char * const patchnames[NUM_PATCHES] = {
   [PATCH_XWING95_DISABLE_3D] = "Hardware 3D mode disabled",
   [PATCH_TIE95_ENABLE_3D]  = "Hardware 3D mode enabled",
   [PATCH_TIE95_DISABLE_3D] = "Hardware 3D mode disabled",
+  [PATCH_XWING95_DEFAULT_HWCURSOR] = "Allow hardware cursor",
+  [PATCH_XWING95_FORCE_SWCURSOR] = "Force software cursor emulation on",
+  [PATCH_TIE95_DEFAULT_HWCURSOR] = "Allow hardware cursor",
+  [PATCH_TIE95_FORCE_SWCURSOR] = "Force software cursor emulation on",
 };
 
 static const struct patchdesc {
@@ -658,6 +669,14 @@ static const struct patchdesc {
       (const uint8_t [7]){0x6a, 0x00, 0xe8, 0xf8, 0x29, 0x00, 0x00}},
   [PATCH_TIE95_DISABLE_3D] = {0x99ed1, 7, 0,
       (const uint8_t [7]){0x6a, 0x02, 0xe8, 0xf8, 0x29, 0x00, 0x00}},
+  [PATCH_XWING95_DEFAULT_HWCURSOR] = {0xab438, 4, 1,
+      (const uint8_t [4]){0x85, 0xc0, 0x74, 0x1c}},
+  [PATCH_XWING95_FORCE_SWCURSOR] = {0xab438, 4, 0,
+      (const uint8_t [4]){0x85, 0xc0, 0x90, 0x90}},
+  [PATCH_TIE95_DEFAULT_HWCURSOR] = {0x9917e, 4, 1,
+      (const uint8_t [4]){0x85, 0xc0, 0x74, 0x1c}},
+  [PATCH_TIE95_FORCE_SWCURSOR] = {0x9917e, 4, 0,
+      (const uint8_t [4]){0x85, 0xc0, 0x90, 0x90}},
 };
 
 struct collection {
