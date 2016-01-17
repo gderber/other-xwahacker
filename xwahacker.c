@@ -171,6 +171,11 @@ enum PATCHES {
 
   PATCH_NO_CD_CHECK2,
 
+  PATCH_XWING95_ENABLE_3D,
+  PATCH_XWING95_DISABLE_3D,
+  PATCH_TIE95_ENABLE_3D,
+  PATCH_TIE95_DISABLE_3D,
+
   NUM_PATCHES
 } SHORT_ENUM;
 
@@ -207,11 +212,13 @@ static const enum PATCHES xwa_patchgroups[] = {
 
 static const enum PATCHES tie95_patchgroups[] = {
   PATCH_TIE95_BLT_CLEAR, PATCH_TIE95_CLEAR2, NO_PATCH,
+  PATCH_TIE95_ENABLE_3D, PATCH_TIE95_DISABLE_3D, NO_PATCH,
   NO_PATCH
 };
 
 static const enum PATCHES xwing95_patchgroups[] = {
   PATCH_XWING95_BLT_CLEAR, PATCH_XWING95_CLEAR2, NO_PATCH,
+  PATCH_XWING95_ENABLE_3D, PATCH_XWING95_DISABLE_3D, NO_PATCH,
   NO_PATCH
 };
 
@@ -336,6 +343,11 @@ static const char * const patchnames[NUM_PATCHES] = {
   [PATCH_XVT_GOG_ENABLE_3D]  = "Hardware 3D mode enabled",
 
   [PATCH_NO_CD_CHECK2] = "skip check if CD is in drive (variant)",
+
+  [PATCH_XWING95_ENABLE_3D]  = "Hardware 3D mode enabled",
+  [PATCH_XWING95_DISABLE_3D] = "Hardware 3D mode disabled",
+  [PATCH_TIE95_ENABLE_3D]  = "Hardware 3D mode enabled",
+  [PATCH_TIE95_DISABLE_3D] = "Hardware 3D mode disabled",
 };
 
 static const struct patchdesc {
@@ -637,6 +649,15 @@ static const struct patchdesc {
   [PATCH_NO_CD_CHECK2] = {0x12a3e0, 16, 0,
       (const uint8_t [16]){0xb8, 0x01, 0x00, 0x00, 0x00, 0xc3, 0xec, 0x50,
                            0x84, 0xc0, 0x56, 0x57, 0x33, 0xc0, 0x40, 0x90}},
+
+  [PATCH_XWING95_ENABLE_3D] = {0xac0a1, 7, 1,
+      (const uint8_t [7]){0x6a, 0x00, 0xe8, 0x0a, 0x3e, 0x00, 0x00}},
+  [PATCH_XWING95_DISABLE_3D] = {0xac0a1, 7, 0,
+      (const uint8_t [7]){0x6a, 0x02, 0xe8, 0x0a, 0x3e, 0x00, 0x00}},
+  [PATCH_TIE95_ENABLE_3D] = {0x99ed1, 7, 1,
+      (const uint8_t [7]){0x6a, 0x00, 0xe8, 0xf8, 0x29, 0x00, 0x00}},
+  [PATCH_TIE95_DISABLE_3D] = {0x99ed1, 7, 0,
+      (const uint8_t [7]){0x6a, 0x02, 0xe8, 0xf8, 0x29, 0x00, 0x00}},
 };
 
 struct collection {
@@ -702,10 +723,10 @@ static const struct metapatch {
      NO_PATCH}
   },
   {"Hardware 3D disabled",
-    {PATCH_BOP_GOG_DISABLE_3D, PATCH_XVT_GOG_DISABLE_3D, NO_PATCH}
+    {PATCH_BOP_GOG_DISABLE_3D, PATCH_XVT_GOG_DISABLE_3D, PATCH_XWING95_DISABLE_3D, PATCH_TIE95_DISABLE_3D, NO_PATCH}
   },
   {"Hardware 3D enabled",
-    {PATCH_BOP_GOG_ENABLE_3D, PATCH_XVT_GOG_ENABLE_3D, NO_PATCH}
+    {PATCH_BOP_GOG_ENABLE_3D, PATCH_XVT_GOG_ENABLE_3D, PATCH_XWING95_ENABLE_3D, PATCH_TIE95_ENABLE_3D, NO_PATCH}
   },
   {NULL}
 };
