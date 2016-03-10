@@ -20,6 +20,9 @@ Version 2.6 has minor fixes and allows re-enabling hardware 3D in GOG XvT.
 Version 2.7 uses a single .bat file to modify all game versions.
 Also supports re-enabling hardware 3D in X-Wing 95 and TIE 95.
 
+Version 2.8 allows fixing broken TIE95.EXE that crash when 3D mode is
+enabled (run nofixedclear.bat).
+
 To patch X-Wing Alliance, extract the .bat and xwahacker.exe files
 somewhere and then copy xwingalliance.exe from the X-Wing Alliance
 installation directory there.
