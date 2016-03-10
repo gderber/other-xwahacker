@@ -181,6 +181,8 @@ enum PATCHES {
   PATCH_TIE95_DEFAULT_HWCURSOR,
   PATCH_TIE95_FORCE_SWCURSOR,
 
+  PATCH_TIE95_BROKEN_CLEAR,
+
   NUM_PATCHES
 } SHORT_ENUM;
 
@@ -216,7 +218,7 @@ static const enum PATCHES xwa_patchgroups[] = {
 };
 
 static const enum PATCHES tie95_patchgroups[] = {
-  PATCH_TIE95_BLT_CLEAR, PATCH_TIE95_CLEAR2, NO_PATCH,
+  PATCH_TIE95_BLT_CLEAR, PATCH_TIE95_CLEAR2, PATCH_TIE95_BROKEN_CLEAR, NO_PATCH,
   PATCH_TIE95_ENABLE_3D, PATCH_TIE95_DISABLE_3D, NO_PATCH,
   PATCH_TIE95_DEFAULT_HWCURSOR, PATCH_TIE95_FORCE_SWCURSOR, NO_PATCH,
   NO_PATCH
@@ -359,6 +361,8 @@ static const char * const patchnames[NUM_PATCHES] = {
   [PATCH_XWING95_FORCE_SWCURSOR] = "Force software cursor emulation on",
   [PATCH_TIE95_DEFAULT_HWCURSOR] = "Allow hardware cursor",
   [PATCH_TIE95_FORCE_SWCURSOR] = "Force software cursor emulation on",
+
+  [PATCH_TIE95_BROKEN_CLEAR] = "Broken Z-buffer clear (will crash in 3D mode)",
 };
 
 static const struct patchdesc {
@@ -677,6 +681,12 @@ static const struct patchdesc {
       (const uint8_t [4]){0x85, 0xc0, 0x74, 0x1c}},
   [PATCH_TIE95_FORCE_SWCURSOR] = {0x9917e, 4, 0,
       (const uint8_t [4]){0x85, 0xc0, 0x90, 0x90}},
+
+  [PATCH_TIE95_BROKEN_CLEAR] = {0x0c76b8, 30, 0,
+      (const uint8_t [30]){0xa1, 0x34, 0x64, 0x45, 0x00, 0x8d, 0x54, 0x24,
+                           0x14, 0x82, 0x98, 0xd4, 0x00, 0xd4, 0xfd, 0x8b,
+                           0x08, 0x6a, 0x04, 0x8d, 0x54, 0x24, 0x18, 0x3a,
+                           0xd4, 0xb0, 0x50, 0xff, 0x51, 0x8c}},
 };
 
 struct collection {
