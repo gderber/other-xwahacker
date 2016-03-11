@@ -183,6 +183,11 @@ enum PATCHES {
 
   PATCH_TIE95_BROKEN_CLEAR,
 
+  PATCH_TIE95_ISD_NOLASER_1,
+  PATCH_TIE95_ISD_LASER_1,
+  PATCH_TIE95_ISD_NOLASER_2,
+  PATCH_TIE95_ISD_LASER_2,
+
   NUM_PATCHES
 } SHORT_ENUM;
 
@@ -221,6 +226,8 @@ static const enum PATCHES tie95_patchgroups[] = {
   PATCH_TIE95_BLT_CLEAR, PATCH_TIE95_CLEAR2, PATCH_TIE95_BROKEN_CLEAR, NO_PATCH,
   PATCH_TIE95_ENABLE_3D, PATCH_TIE95_DISABLE_3D, NO_PATCH,
   PATCH_TIE95_DEFAULT_HWCURSOR, PATCH_TIE95_FORCE_SWCURSOR, NO_PATCH,
+  PATCH_TIE95_ISD_NOLASER_1, PATCH_TIE95_ISD_LASER_1, NO_PATCH,
+  PATCH_TIE95_ISD_NOLASER_2, PATCH_TIE95_ISD_LASER_2, NO_PATCH,
   NO_PATCH
 };
 
@@ -363,6 +370,11 @@ static const char * const patchnames[NUM_PATCHES] = {
   [PATCH_TIE95_FORCE_SWCURSOR] = "Force software cursor emulation on",
 
   [PATCH_TIE95_BROKEN_CLEAR] = "Broken Z-buffer clear (will crash in 3D mode)",
+
+  [PATCH_TIE95_ISD_NOLASER_1] = "ISD lasers not working part 1",
+  [PATCH_TIE95_ISD_LASER_1] = "ISD lasers working part 1",
+  [PATCH_TIE95_ISD_NOLASER_2] = "ISD lasers not working part 2",
+  [PATCH_TIE95_ISD_LASER_2] = "ISD lasers working part 2",
 };
 
 static const struct patchdesc {
@@ -687,6 +699,23 @@ static const struct patchdesc {
                            0x14, 0x82, 0x98, 0xd4, 0x00, 0xd4, 0xfd, 0x8b,
                            0x08, 0x6a, 0x04, 0x8d, 0x54, 0x24, 0x18, 0x3a,
                            0xd4, 0xb0, 0x50, 0xff, 0x51, 0x8c}},
+
+  [PATCH_TIE95_ISD_NOLASER_1] = {0xdd898, 8, 1,
+      (const uint8_t [8]){0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x35, 0x37}},
+  [PATCH_TIE95_ISD_LASER_1] = {0xdd898, 8, 0,
+      (const uint8_t [8]){0x30, 0x31, 0x32, 0x33, 0x34, 0x36, 0x36, 0x37}},
+  [PATCH_TIE95_ISD_NOLASER_2] = {0xee830, 36, 1,
+      (const uint8_t [36]){0x43, 0x34, 0x00, 0x45, 0x00, 0x21, 0x00, 0x04,
+                           0x00, 0xfa, 0x00, 0x7d, 0x00, 0x00, 0x00, 0x00,
+                           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x43, 0x35,
+                           0x02, 0x00, 0x03, 0x01, 0x00, 0x03, 0x1c, 0x0c,
+                           0x84, 0x03, 0x00, 0x00}},
+  [PATCH_TIE95_ISD_LASER_2] = {0xee830, 36, 0,
+      (const uint8_t [36]){0x43, 0x34, 0x00, 0x45, 0x03, 0x21, 0x00, 0x04,
+                           0x00, 0xfa, 0x00, 0x7d, 0x00, 0x00, 0x00, 0x00,
+                           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x43, 0x34,
+                           0x00, 0x45, 0x03, 0x21, 0x00, 0x04, 0x00, 0xfa,
+                           0x00, 0x7d, 0x00, 0x00}},
 };
 
 struct collection {
@@ -720,6 +749,14 @@ static const struct collection xwa_collections[] = {
   {NULL}
 };
 
+static const struct collection tie95_collections[] = {
+  {"ISD lasers not working",
+    {PATCH_TIE95_ISD_NOLASER_1, PATCH_TIE95_ISD_NOLASER_2, NO_PATCH}},
+  {"ISD lasers fix",
+    {PATCH_TIE95_ISD_LASER_1, PATCH_TIE95_ISD_LASER_2, NO_PATCH}},
+  {NULL}
+};
+
 static const struct binary {
   const char *name;
   const char *filename;
@@ -727,7 +764,7 @@ static const struct binary {
   const struct collection *collections;
 } binaries[] = {
   {"X-Wing Alliance 2.02", "xwingalliance.exe", xwa_patchgroups, xwa_collections},
-  {"TIE Fighter 95", "TIE95.EXE", tie95_patchgroups, NULL},
+  {"TIE Fighter 95", "TIE95.EXE", tie95_patchgroups, tie95_collections},
   {"X-Wing 95", "XWING95.EXE", xwing95_patchgroups, NULL},
   {"X-Wing vs. TIE Fighter", "Z_XVT__.EXE", xvtbop_patchgroups, NULL},
   {"Balance of Power (DE)", "z_xvt__.EXE", bop_patchgroups, NULL},
