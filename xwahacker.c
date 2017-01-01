@@ -188,6 +188,15 @@ enum PATCHES {
   PATCH_TIE95_ISD_NOLASER_2,
   PATCH_TIE95_ISD_LASER_2,
 
+  PATCH_SHOWFPS_OFF_1,
+  PATCH_SHOWFPS_OFF_2,
+  PATCH_SHOWFPS_ON_1,
+  PATCH_SHOWFPS_ON_2,
+  PATCH_SHOWFPS_NONE,
+  PATCH_SHOWFPS_FPS,
+  PATCH_SHOWFPS_FPS_SCENESTATS,
+  PATCH_SHOWFPS_FPS_TEXSTATS,
+
   NUM_PATCHES
 } SHORT_ENUM;
 
@@ -219,6 +228,9 @@ static const enum PATCHES xwa_patchgroups[] = {
   PATCH_PRTSCR_8_2, PATCH_PRTSCR_32_2, NO_PATCH,
   PATCH_NO_MSGLOOP, PATCH_ADD_MSGLOOP, NO_PATCH,
   PATCH_NO_HIDE_CD_DRIVES, PATCH_HIDE_CD_DRIVES, NO_PATCH,
+  PATCH_SHOWFPS_OFF_1, PATCH_SHOWFPS_ON_1, NO_PATCH,
+  PATCH_SHOWFPS_OFF_2, PATCH_SHOWFPS_ON_2, NO_PATCH,
+  PATCH_SHOWFPS_NONE, PATCH_SHOWFPS_FPS, PATCH_SHOWFPS_FPS_SCENESTATS, PATCH_SHOWFPS_FPS_TEXSTATS, NO_PATCH,
   NO_PATCH
 };
 
@@ -375,6 +387,15 @@ static const char * const patchnames[NUM_PATCHES] = {
   [PATCH_TIE95_ISD_LASER_1] = "ISD lasers working part 1",
   [PATCH_TIE95_ISD_NOLASER_2] = "ISD lasers not working part 2",
   [PATCH_TIE95_ISD_LASER_2] = "ISD lasers working part 2",
+
+  [PATCH_SHOWFPS_OFF_1] = "Do not show FPS part 1",
+  [PATCH_SHOWFPS_OFF_2] = "Do not show FPS part 2",
+  [PATCH_SHOWFPS_ON_1] = "Show FPS part 1",
+  [PATCH_SHOWFPS_ON_2] = "Show FPS part 2",
+  [PATCH_SHOWFPS_NONE] = "Show FPS off",
+  [PATCH_SHOWFPS_FPS] = "Show FPS FPS-only",
+  [PATCH_SHOWFPS_FPS_SCENESTATS] = "Show FPS and scene statistics",
+  [PATCH_SHOWFPS_FPS_TEXSTATS] = "Show FPS and texture statistics",
 };
 
 static const struct patchdesc {
@@ -716,6 +737,22 @@ static const struct patchdesc {
                            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x43, 0x34,
                            0x00, 0x45, 0x03, 0x21, 0x00, 0x04, 0x00, 0xfa,
                            0x00, 0x7d, 0x00, 0x00}},
+  [PATCH_SHOWFPS_OFF_1] = {0x5a3ea, 6, 1,
+      (const uint8_t [6]){0x85, 0xc0, 0x74, 0x05, 0xe8, 0x8d}},
+  [PATCH_SHOWFPS_OFF_2] = {0xf165a, 6, 1,
+      (const uint8_t [6]){0x85, 0xc0, 0x74, 0x05, 0xe8, 0x1d}},
+  [PATCH_SHOWFPS_ON_1] = {0x5a3ea, 6, 0,
+      (const uint8_t [6]){0x85, 0xc0, 0x90, 0x90, 0xe8, 0x8d}},
+  [PATCH_SHOWFPS_ON_2] = {0xf165a, 6, 0,
+      (const uint8_t [6]){0x85, 0xc0, 0x90, 0x90, 0xe8, 0x1d}},
+  [PATCH_SHOWFPS_NONE] = {0x7978a, 6, 1,
+      (const uint8_t [6]){0x48, 0x74, 0x6f, 0x48, 0x74, 0x33}},
+  [PATCH_SHOWFPS_FPS] = {0x7978a, 6, 0,
+      (const uint8_t [6]){0x48, 0xeb, 0x6f, 0x48, 0x74, 0x33}},
+  [PATCH_SHOWFPS_FPS_SCENESTATS] = {0x7978a, 6, 0,
+      (const uint8_t [6]){0x48, 0xeb, 0x36, 0x48, 0x74, 0x33}},
+  [PATCH_SHOWFPS_FPS_TEXSTATS] = {0x7978a, 6, 0,
+      (const uint8_t [6]){0x48, 0xeb, 0x0a, 0x48, 0x74, 0x33}},
 };
 
 struct collection {
@@ -746,6 +783,14 @@ static const struct collection xwa_collections[] = {
     {PATCH_CD_CHECK, PATCH_CD_VOICE, PATCH_NO_HIDE_CD_DRIVES, NO_PATCH}},
   {"play from installation directory",
     {PATCH_NO_CD_CHECK, PATCH_HD_VOICE, PATCH_HIDE_CD_DRIVES, NO_PATCH}},
+  {"do not show FPS",
+    {PATCH_SHOWFPS_OFF_1, PATCH_SHOWFPS_OFF_2, PATCH_SHOWFPS_NONE, NO_PATCH}},
+  {"show FPS",
+    {PATCH_SHOWFPS_ON_1, PATCH_SHOWFPS_ON_2, PATCH_SHOWFPS_FPS, NO_PATCH}},
+  {"show FPS and scene statistics",
+    {PATCH_SHOWFPS_ON_1, PATCH_SHOWFPS_ON_2, PATCH_SHOWFPS_FPS_SCENESTATS, NO_PATCH}},
+  {"show FPS and texture statistics",
+    {PATCH_SHOWFPS_ON_1, PATCH_SHOWFPS_ON_2, PATCH_SHOWFPS_FPS_TEXSTATS, NO_PATCH}},
   {NULL}
 };
 
