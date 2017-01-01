@@ -77,6 +77,13 @@ static const char *opt_names[NUM_OPTS] = {
     [OPT_MSGLOOP] = "Fix keyboard not working in hangar (Linux/WINE fix)",
 };
 
+static const char *showfps_names[] = {
+    [SHOWFPS_DISABLED] = "Disabled",
+    [SHOWFPS_FPS_ONLY] = "FPS only",
+    [SHOWFPS_FPS_SCENESTATS] = "FPS and scene statistics",
+    [SHOWFPS_FPS_TEXSTATS] = "FPS and scene statistics",
+};
+
 XWAHacker::XWAHacker()
 {
     QGridLayout *res_layout = new QGridLayout();
@@ -102,6 +109,15 @@ XWAHacker::XWAHacker()
     QGroupBox *opt_group = new QGroupBox(tr("Options - all disabled in original game"));
     opt_group->setLayout(opt_layout);
 
+    QHBoxLayout *fps_layout = new QHBoxLayout();
+    for (int i = 0; i < NUM_SHOWFPS; ++i)
+    {
+        showfps[i] = new QRadioButton(tr(showfps_names[i]));
+        fps_layout->addWidget(showfps[i]);
+    }
+    QGroupBox *fps_group = new QGroupBox(tr("Show FPS"));
+    fps_group->setLayout(fps_layout);
+
     QHBoxLayout *button_layout = new QHBoxLayout();
     QPushButton *exit = new QPushButton(tr("Exit"));
     button_layout->addWidget(exit);
@@ -111,6 +127,7 @@ XWAHacker::XWAHacker()
     QVBoxLayout *main_layout = new QVBoxLayout();
     main_layout->addWidget(res_group);
     main_layout->addWidget(opt_group);
+    main_layout->addWidget(fps_group);
     main_layout->addLayout(button_layout);
 
     QWidget *central_widget = new QWidget();
@@ -171,6 +188,10 @@ bool XWAHacker::openBinary(const char *filename)
     {
         opts[i]->setEnabled(enable_opts);
     }
+    for (int i = 0; i < NUM_SHOWFPS; ++i)
+    {
+        showfps[i]->setEnabled(enable_opts);
+    }
     struct resopts resolutions[NUM_RES];
     read_res(buffer, xwa, resolutions);
     for (int i = 0; i < 4; ++i)
@@ -204,6 +225,24 @@ bool XWAHacker::openBinary(const char *filename)
     if (check_patch(buffer, xwa, PATCH_NO_CD_CHECK2, 1))
     {
         opts[OPT_NOCD]->setChecked(true);
+    }
+
+    enum ShowFPS showfps_mode = SHOWFPS_DISABLED;
+    if (check_patch(buffer, xwa, PATCH_SHOWFPS_FPS, 1))
+    {
+        showfps_mode = SHOWFPS_FPS_ONLY;
+    }
+    else if (check_patch(buffer, xwa, PATCH_SHOWFPS_FPS_SCENESTATS, 1))
+    {
+        showfps_mode = SHOWFPS_FPS_SCENESTATS;
+    }
+    else if (check_patch(buffer, xwa, PATCH_SHOWFPS_FPS_TEXSTATS, 1))
+    {
+        showfps_mode = SHOWFPS_FPS_TEXSTATS;
+    }
+    for (int i = 0; i < NUM_SHOWFPS; ++i)
+    {
+        showfps[i]->setChecked(i == showfps_mode);
     }
 
     reset_update();
@@ -329,6 +368,34 @@ void XWAHacker::save()
         {
             QMessageBox err(this);
             err.setText(tr("Failed setting option") + tr(opt_names[i]));
+            err.exec();
+            return;
+        }
+    }
+    if (showfps[0]->isEnabled())
+    {
+        int res = 0;
+        int collection = -1;
+        for (int i = 0; i < NUM_SHOWFPS; ++i)
+        {
+            if (showfps[i]->isChecked())
+            {
+                if (collection != -1)
+                {
+                    collection = -2;
+                    break;
+                }
+                collection = 8 + i;
+            }
+        }
+        if (collection >= 0)
+        {
+            res = apply_collection(buffer, xwa, binaries, collection);
+        }
+        if (!res)
+        {
+            QMessageBox err(this);
+            err.setText(tr("Failed setting FPS display mode"));
             err.exec();
             return;
         }

@@ -23,6 +23,7 @@
 #include <QDoubleSpinBox>
 #include <QMainWindow>
 #include <QPushButton>
+#include <QRadioButton>
 #include <QSpinBox>
 
 enum {
@@ -33,6 +34,14 @@ enum {
     OPT_NOSTARS,
     OPT_MSGLOOP,
     NUM_OPTS
+};
+
+enum ShowFPS {
+    SHOWFPS_DISABLED = 0,
+    SHOWFPS_FPS_ONLY,
+    SHOWFPS_FPS_SCENESTATS,
+    SHOWFPS_FPS_TEXSTATS,
+    NUM_SHOWFPS
 };
 
 class XWAHacker : public QMainWindow
@@ -63,6 +72,7 @@ private:
     QDoubleSpinBox *fov_hud_spinboxes[4][2];
     QPushButton *res_reset_buttons[4];
     QCheckBox *opts[NUM_OPTS];
+    QRadioButton *showfps[NUM_SHOWFPS];
     FILE *xwa;
 };
 
